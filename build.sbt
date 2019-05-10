@@ -6,41 +6,61 @@ lazy val `infrastructure` = (project in file("modules/infrastructure"))
   .settings(
     name := s"$baseName-infrastructure",
     libraryDependencies ++= Seq(
+      Passay.passay,
+      Commons.codec
     )
   )
   .settings(coreSettings)
 
-lazy val `entities` = (project in file("modules/entities"))
+lazy val `domain` = (project in file("modules/domain"))
   .settings(
-    name := s"$baseName-entities",
+    name := s"$baseName-domain",
     libraryDependencies ++= Seq(
-      Scalaz.zio
+      Scalaz.zio,
+      ScalaDDDBase.core,
+      Cats.core,
+      Cats.free,
+      Beachape.enumeratum
     )
   )
   .settings(coreSettings)
   .dependsOn(infrastructure)
+
+lazy val `contract-usecases` = (project in file("modules/contract-usecases"))
+  .settings(
+    name := s"$baseName-contract-usecases"
+  )
+  .settings(coreSettings)
+  .dependsOn(`domain`)
+
+lazy val `contract-interfaces` = (project in file("modules/contract-interfaces"))
+  .settings(
+    name := s"$baseName-contract-interfaces"
+  )
+  .settings(coreSettings)
+  .dependsOn(`contract-usecases`)
 
 lazy val `usecases` = (project in file("modules/usecases"))
   .settings(
     name := s"$baseName-usecases"
   )
   .settings(coreSettings)
-  .dependsOn(entities)
+  .dependsOn(`contract-interfaces`)
 
-lazy val `adapters` = (project in file("modules/adapters"))
+lazy val `interfaces` = (project in file("modules/interfaces"))
   .settings(
-    name := s"$baseName-adapters",
+    name := s"$baseName-interfaces",
     libraryDependencies ++= Seq()
   )
   .settings(coreSettings)
-  .dependsOn(usecases)
+  .dependsOn(`usecases`)
 
-lazy val `main` = (project in file("modules/main"))
+lazy val `applications-http` = (project in file("applications/http"))
   .settings(
-    name := s"$baseName-main"
+    name := s"$baseName-applications-http"
   )
   .settings(coreSettings)
-  .dependsOn(adapters)
+  .dependsOn(`interfaces`)
 
 lazy val `root` = (project in file("."))
   .settings(
@@ -48,9 +68,12 @@ lazy val `root` = (project in file("."))
   )
   .settings(coreSettings)
   .aggregate(
-    entities,
-    usecases,
-    adapters,
-    main
+    `infrastructure`,
+    `domain`,
+    `contract-usecases`,
+    `contract-interfaces`,
+    `usecases`,
+    `interfaces`,
+    `applications-http`
   )
 

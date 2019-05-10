@@ -4,7 +4,7 @@ import sbt._
 
 object Settings {
 
-  val coreSettings = Seq(
+  val coreSettings: Def.SettingsDefinition = Seq(
     organization := "com.github.yoshiyoshiifujii",
     scalaVersion := "2.12.8",
     scalacOptions ++= {
@@ -14,10 +14,24 @@ object Settings {
         "-unchecked",
         "-encoding",
         "UTF-8",
+        "-Xfatal-warnings",
         "-language:_",
-        "-Ypartial-unification",
-        "-Ydelambdafy:method",
-        "-target:jvm-1.8"
+        // Warn if an argument list is modified to match the receiver
+        "-Ywarn-adapted-args",
+        // Warn when dead code is identified.
+        "-Ywarn-dead-code",
+        // Warn about inaccessible types in method signatures.
+        "-Ywarn-inaccessible",
+        // Warn when a type argument is inferred to be `Any`.
+        "-Ywarn-infer-any",
+        // Warn when non-nullary `def f()' overrides nullary `def f'
+        "-Ywarn-nullary-override",
+        // Warn when nullary methods return Unit.
+        "-Ywarn-nullary-unit",
+        // Warn when numerics are widened.
+        "-Ywarn-numeric-widen",
+        // Warn when imports are unused.
+        "-Ywarn-unused-import"
       )
     },
     scalafmtOnCompile in ThisBuild := true,
