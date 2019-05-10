@@ -16,7 +16,6 @@ lazy val `domain` = (project in file("modules/domain"))
   .settings(
     name := s"$baseName-domain",
     libraryDependencies ++= Seq(
-      Scalaz.zio,
       ScalaDDDBase.core,
       Cats.core,
       Cats.free,
