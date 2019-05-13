@@ -25,26 +25,15 @@ lazy val `domain` = (project in file("modules/domain"))
   .settings(coreSettings)
   .dependsOn(infrastructure)
 
-lazy val `contract-usecases` = (project in file("modules/contract-usecases"))
+lazy val `usecases` = (project in file("modules/usecases"))
   .settings(
-    name := s"$baseName-contract-usecases"
+    name := s"$baseName-usecases",
+    libraryDependencies ++= Seq(
+      Scalaz.zio % Test
+    )
   )
   .settings(coreSettings)
   .dependsOn(`domain`)
-
-lazy val `contract-interfaces` = (project in file("modules/contract-interfaces"))
-  .settings(
-    name := s"$baseName-contract-interfaces"
-  )
-  .settings(coreSettings)
-  .dependsOn(`contract-usecases`)
-
-lazy val `usecases` = (project in file("modules/usecases"))
-  .settings(
-    name := s"$baseName-usecases"
-  )
-  .settings(coreSettings)
-  .dependsOn(`contract-interfaces`)
 
 lazy val `interfaces` = (project in file("modules/interfaces"))
   .settings(
@@ -69,8 +58,6 @@ lazy val `root` = (project in file("."))
   .aggregate(
     `infrastructure`,
     `domain`,
-    `contract-usecases`,
-    `contract-interfaces`,
     `usecases`,
     `interfaces`,
     `applications-http`

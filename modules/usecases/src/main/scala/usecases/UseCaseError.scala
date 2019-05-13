@@ -5,7 +5,7 @@ import domain.DomainError
 
 sealed trait UseCaseError
 
-case class UseCaseSystemError(cause: Throwable)     extends UseCaseError
+case class UseCaseSystemError(cause: Throwable) extends UseCaseError
 
 case class UseCaseApplicationError(message: String) extends UseCaseError
 object UseCaseApplicationError {
