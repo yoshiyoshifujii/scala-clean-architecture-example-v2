@@ -41,6 +41,7 @@ object Settings {
       "Seasar2 Repository" at "http://maven.seasar.org/maven2",
       Resolver.bintrayRepo("danslapman", "maven")
     ),
+    addCompilerPlugin("org.typelevel" %% "kind-projector" % "0.10.0"),
     libraryDependencies ++= Seq(
       ScalaTest.core % Test
     )

@@ -29,7 +29,8 @@ lazy val `usecases` = (project in file("modules/usecases"))
   .settings(
     name := s"$baseName-usecases",
     libraryDependencies ++= Seq(
-      Scalaz.zio % Test
+      Scalaz.zio % Test,
+      Wvlet.airframe % Test
     )
   )
   .settings(coreSettings)

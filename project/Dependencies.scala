@@ -35,3 +35,8 @@ object Beachape {
   val version = "1.5.13"
   val enumeratum = "com.beachape"  %% "enumeratum" % version
 }
+
+object Wvlet {
+  val version = "19.5.0"
+  val airframe = "org.wvlet.airframe" %% "airframe" % version
+}
