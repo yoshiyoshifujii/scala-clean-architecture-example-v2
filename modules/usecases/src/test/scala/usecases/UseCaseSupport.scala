@@ -65,6 +65,8 @@ object SampleUseCasesLayer {
   trait SampleIDGenerator[F[_], A] {
     def generate: F[A]
   }
+  trait SampleAIDGenerator[F[_]] extends SampleIDGenerator[F, SampleAID]
+  trait SampleBIDGenerator[F[_]] extends SampleIDGenerator[F, SampleBID]
 
   trait SampleARepository[F[_]] extends AggregateSingleWriter[F] {
     override type AggregateType = SampleA
@@ -79,10 +81,10 @@ object SampleUseCasesLayer {
     def findBy(aId: SampleAID): F[Option[SampleB]]
   }
 
-  case class SampleUseCase[F[_]](
-      sampleAIDGenerator: SampleIDGenerator[F, SampleAID],
+  class SampleUseCase[F[_]](
+      sampleAIDGenerator: SampleAIDGenerator[F],
       sampleARepository: SampleARepository[F],
-      sampleBIDGenerator: SampleIDGenerator[F, SampleBID],
+      sampleBIDGenerator: SampleBIDGenerator[F],
       sampleBRepository: SampleBRepository[F]
   ) extends UseCase[F, SampleInputData, SampleOutputData] {
     import cats.implicits._
@@ -230,11 +232,11 @@ object SampleInterfacesLayer {
 
   }
 
-  trait SampleAIDGenerator extends SampleIDGenerator[ZIOContext, SampleAID] {
+  trait SampleAIDGeneratorImpl extends SampleAIDGenerator[ZIOContext] {
     override def generate: ZIOContext[SampleAID] = ZIO.succeed(SampleAID("id-1"))
   }
 
-  trait SampleBIDGenerator extends SampleIDGenerator[ZIOContext, SampleBID] {
+  trait SampleBIDGeneratorImpl extends SampleBIDGenerator[ZIOContext] {
     override def generate: ZIOContext[SampleBID] = ZIO.succeed(SampleBID("id-1"))
   }
 
@@ -249,32 +251,33 @@ object SampleInterfacesLayer {
 
   case class SampleResponseJson(id: String)
 
-  trait SamplePresenterImpl[F[_]] extends SamplePresenter[F, SampleOutputData, SampleResponseJson]
+  trait SamplePresenterImpl extends SamplePresenter[ZIOContext, SampleOutputData, SampleResponseJson] {
+    override protected def response(outputData: SampleOutputData): SampleResponseJson =
+      SampleResponseJson(outputData.id)
+  }
 
   object SampleErrors {
     import cats._
-    trait ZIOErrorWrapper[AppType] {
-      type FF[A] = ZIO[AppType, UseCaseError, A]
-      implicit val useCaseMonadErrorForZIO: MonadError[FF, UseCaseError] =
-        new MonadError[FF, UseCaseError] with StackSafeMonad[FF] {
-          override def pure[A](x: A): FF[A] = ZIO.succeed(x)
+    implicit val useCaseMonadErrorForZIO: MonadError[ZIOContext, UseCaseError] =
+      new MonadError[ZIOContext, UseCaseError] with StackSafeMonad[ZIOContext] {
+        override def pure[A](x: A): ZIOContext[A] = ZIO.succeed(x)
 
-          override def flatMap[A, B](fa: FF[A])(f: A => FF[B]): FF[B] = fa.flatMap(f)
+        override def flatMap[A, B](fa: ZIOContext[A])(f: A => ZIOContext[B]): ZIOContext[B] = fa.flatMap(f)
 
-          override def raiseError[A](e: UseCaseError): FF[A] = ZIO.fail(e)
+        override def raiseError[A](e: UseCaseError): ZIOContext[A] = ZIO.fail(e)
 
-          override def handleErrorWith[A](fa: FF[A])(f: UseCaseError => FF[A]): FF[A] = fa.catchAll(f)
+        override def handleErrorWith[A](fa: ZIOContext[A])(f: UseCaseError => ZIOContext[A]): ZIOContext[A] =
+          fa.catchAll(f)
 
-        }
-    }
+      }
   }
 
-  class SampleController(
-      sampleUseCase: SampleUseCase[ZIOContext],
-      samplePresenter: SamplePresenterImpl[ZIOContext]
-  ) extends SampleErrors.ZIOErrorWrapper[AppType] {
+  class SampleController[F[_]](
+      sampleUseCase: SampleUseCase[F],
+      samplePresenter: SamplePresenter[F, SampleOutputData, SampleResponseJson]
+  ) {
 
-    def post(name: String, detail: String): ZIOContext[SampleResponseJson] = {
+    def post(name: String, detail: String)(implicit ME: UseCaseMonadError[F]): F[SampleResponseJson] = {
       val inputData = SampleInputData(name, detail)
       samplePresenter.response(sampleUseCase.execute(inputData))
     }
