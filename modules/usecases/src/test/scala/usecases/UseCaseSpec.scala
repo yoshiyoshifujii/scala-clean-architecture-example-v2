@@ -19,37 +19,39 @@ class UseCaseSpec extends FreeSpec {
         .bind[SampleARepository[ZIOContext]].to[SampleARepositoryOnRDB]
         .bind[SampleBRepository[ZIOContext]].to[SampleBRepositoryOnKVS]
         .bind[SampleUseCase[ZIOContext]].toEagerSingleton
+        .bind[SamplePresenter[ZIOContext, SampleOutputData, SampleResponseJson]].to[SamplePresenterImpl]
+        .bind[SampleController[ZIOContext]].toEagerSingleton
 
       design.withSession { session =>
-        println(session.build[SampleUseCase[ZIOContext]].sampleAIDGenerator.generate)
+        val runtime = new scalaz.zio.Runtime[AppType] {
+          override val Environment: AppType = new RDB.Live[SampleAOnRDBRecord] with KVS.Live[SampleBOnKVSRecord]
+          val Platform: Platform            = PlatformLive.Default
+        }
+        import SampleErrors._
+        assert(runtime.unsafeRun(session.build[SampleController[ZIOContext]].post("name", "detail")).id === "id-1")
       }
 
     }
 
     "execute" in {
-      import SampleDomainLayer._
       import SampleInterfacesLayer._
       import SampleUseCasesLayer._
 
-      val sampleAIDGenerator: SampleIDGenerator[ZIOContext, SampleAID] =
-        new SampleAIDGenerator {}
+      val sampleAIDGenerator: SampleAIDGenerator = new SampleAIDGeneratorImpl {}
 
       val sampleARepository: SampleARepository[ZIOContext] =
         new SampleARepositoryOnRDB {}
 
-      val sampleBIDGenerator: SampleIDGenerator[ZIOContext, SampleBID] =
-        new SampleBIDGenerator {}
+      val sampleBIDGenerator: SampleBIDGenerator = new SampleBIDGeneratorImpl {}
 
       val sampleBRepository: SampleBRepository[ZIOContext] =
         new SampleBRepositoryOnKVS {}
 
       val sampleUseCase: SampleUseCase[ZIOContext] =
-        SampleUseCase[ZIOContext](sampleAIDGenerator, sampleARepository, sampleBIDGenerator, sampleBRepository)
+        new SampleUseCase[ZIOContext](sampleAIDGenerator, sampleARepository, sampleBIDGenerator, sampleBRepository)
 
-      val samplePresenter = new SamplePresenterImpl[ZIOContext] {
-        override protected def response(outputData: SampleOutputData): SampleResponseJson =
-          SampleResponseJson(outputData.id)
-      }
+      val samplePresenter: SamplePresenter[ZIOContext, SampleOutputData, SampleResponseJson] =
+        new SamplePresenterImpl {}
 
       val controller = new SampleController(sampleUseCase, samplePresenter)
 
@@ -57,6 +59,7 @@ class UseCaseSpec extends FreeSpec {
         override val Environment: AppType = new RDB.Live[SampleAOnRDBRecord] with KVS.Live[SampleBOnKVSRecord]
         val Platform: Platform            = PlatformLive.Default
       }
+      import SampleErrors._
       assert(runtime.unsafeRun(controller.post("name", "detail")).id === "id-1")
     }
 
