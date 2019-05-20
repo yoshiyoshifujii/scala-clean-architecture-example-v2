@@ -112,9 +112,37 @@ object SampleUseCasesLayer {
   }
 }
 
+object SampleInterfacesContractLayer {
+  import SampleUseCasesLayer._
+
+  case class SampleResponseJson(id: String)
+
+  trait SamplePresenter[F[_], OutputData, ViewModel] {
+    import cats.implicits._
+
+    def response(res: F[OutputData])(implicit ME: UseCaseMonadError[F]): F[ViewModel] =
+      res.map((outputData: OutputData) => response(outputData))
+
+    protected def response(outputData: OutputData): ViewModel
+  }
+
+  class SampleController[F[_], ViewModel](
+      sampleUseCase: SampleUseCase[F],
+      samplePresenter: SamplePresenter[F, SampleOutputData, ViewModel]
+  ) {
+
+    def post(name: String, detail: String)(implicit ME: UseCaseMonadError[F]): F[ViewModel] = {
+      val inputData = SampleInputData(name, detail)
+      samplePresenter.response(sampleUseCase.execute(inputData))
+    }
+  }
+
+}
+
 object SampleInterfacesLayer {
   import SampleDomainLayer._
   import SampleUseCasesLayer._
+  import SampleInterfacesContractLayer._
 
   trait RDBRecord
   case class SampleAOnRDBRecord(id: String, name: String) extends RDBRecord
@@ -240,17 +268,6 @@ object SampleInterfacesLayer {
     override def generate: ZIOContext[SampleBID] = ZIO.succeed(SampleBID("id-1"))
   }
 
-  trait SamplePresenter[F[_], OutputData, Json] {
-    import cats.implicits._
-
-    def response(res: F[OutputData])(implicit ME: UseCaseMonadError[F]): F[Json] =
-      res.map((outputData: OutputData) => response(outputData))
-
-    protected def response(outputData: OutputData): Json
-  }
-
-  case class SampleResponseJson(id: String)
-
   trait SamplePresenterImpl extends SamplePresenter[ZIOContext, SampleOutputData, SampleResponseJson] {
     override protected def response(outputData: SampleOutputData): SampleResponseJson =
       SampleResponseJson(outputData.id)
@@ -270,17 +287,6 @@ object SampleInterfacesLayer {
           fa.catchAll(f)
 
       }
-  }
-
-  class SampleController[F[_]](
-      sampleUseCase: SampleUseCase[F],
-      samplePresenter: SamplePresenter[F, SampleOutputData, SampleResponseJson]
-  ) {
-
-    def post(name: String, detail: String)(implicit ME: UseCaseMonadError[F]): F[SampleResponseJson] = {
-      val inputData = SampleInputData(name, detail)
-      samplePresenter.response(sampleUseCase.execute(inputData))
-    }
   }
 
 }

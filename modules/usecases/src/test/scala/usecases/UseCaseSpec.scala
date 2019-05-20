@@ -8,8 +8,9 @@ class UseCaseSpec extends FreeSpec {
   "UseCase" - {
 
     "execute by airframe" in {
-      import SampleInterfacesLayer._
       import SampleUseCasesLayer._
+      import SampleInterfacesContractLayer._
+      import SampleInterfacesLayer._
       import wvlet.airframe._
 
       val design: Design = newDesign
@@ -19,7 +20,7 @@ class UseCaseSpec extends FreeSpec {
         .bind[SampleBRepository[ZIOContext]].to[SampleBRepositoryOnKVS]
         .bind[SampleUseCase[ZIOContext]].toEagerSingleton
         .bind[SamplePresenter[ZIOContext, SampleOutputData, SampleResponseJson]].to[SamplePresenterImpl]
-        .bind[SampleController[ZIOContext]].toEagerSingleton
+        .bind[SampleController[ZIOContext, SampleResponseJson]].toEagerSingleton
 
       design.withSession { session =>
         val runtime = new scalaz.zio.Runtime[AppType] {
@@ -27,14 +28,15 @@ class UseCaseSpec extends FreeSpec {
           val Platform: Platform            = PlatformLive.Default
         }
         import SampleErrors._
-        assert(runtime.unsafeRun(session.build[SampleController[ZIOContext]].post("name", "detail")).id === "id-1")
+        assert(runtime.unsafeRun(session.build[SampleController[ZIOContext, SampleResponseJson]].post("name", "detail")).id === "id-1")
       }
 
     }
 
     "execute" in {
-      import SampleInterfacesLayer._
       import SampleUseCasesLayer._
+      import SampleInterfacesContractLayer._
+      import SampleInterfacesLayer._
 
       val sampleAIDGenerator: SampleAIDGenerator[ZIOContext] = new SampleAIDGeneratorImpl {}
       val sampleARepository: SampleARepository[ZIOContext]   = new SampleARepositoryOnRDB {}
