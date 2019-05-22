@@ -29,9 +29,9 @@ object Settings {
         // Warn when nullary methods return Unit.
         "-Ywarn-nullary-unit",
         // Warn when numerics are widened.
-        "-Ywarn-numeric-widen",
+        "-Ywarn-numeric-widen"
         // Warn when imports are unused.
-        "-Ywarn-unused-import"
+        //"-Ywarn-unused-import"
       )
     },
     scalafmtOnCompile in ThisBuild := true,

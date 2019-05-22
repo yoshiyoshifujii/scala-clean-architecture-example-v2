@@ -28,7 +28,10 @@ class UseCaseSpec extends FreeSpec {
           val Platform: Platform            = PlatformLive.Default
         }
         import SampleErrors._
-        assert(runtime.unsafeRun(session.build[SampleController[ZIOContext, SampleResponseJson]].post("name", "detail")).id === "id-1")
+        assert(
+          runtime
+            .unsafeRun(session.build[SampleController[ZIOContext, SampleResponseJson]].post("name", "detail")).id === "id-1"
+        )
       }
 
     }

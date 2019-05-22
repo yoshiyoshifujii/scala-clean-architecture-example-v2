@@ -287,6 +287,18 @@ object SampleInterfacesLayer {
           fa.catchAll(f)
 
       }
+
+    implicit val useCasesMonadErrorForId: MonadError[Id, UseCaseError] =
+      new MonadError[Id, UseCaseError] with StackSafeMonad[Id] {
+        override def pure[A](x: A): Id[A] = x
+
+        override def flatMap[A, B](fa: Id[A])(f: A => Id[B]): Id[B] = f(fa)
+
+        override def raiseError[A](e: UseCaseError): Id[A] = throw new Exception(e.toString)
+
+        override def handleErrorWith[A](fa: Id[A])(f: UseCaseError => Id[A]): Id[A] = ???
+
+      }
   }
 
 }

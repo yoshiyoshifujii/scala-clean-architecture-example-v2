@@ -19,7 +19,8 @@ lazy val `domain` = (project in file("modules/domain"))
       ScalaDDDBase.core,
       Cats.core,
       Cats.free,
-      Beachape.enumeratum
+      Beachape.enumeratum,
+      Timepit.refined
     )
   )
   .settings(coreSettings)

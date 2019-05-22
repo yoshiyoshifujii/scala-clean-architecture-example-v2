@@ -40,3 +40,8 @@ object Wvlet {
   val version = "19.5.0"
   val airframe = "org.wvlet.airframe" %% "airframe" % version
 }
+
+object Timepit {
+  val version = "0.9.5"
+  val refined = "eu.timepit" %% "refined" % version
+}
