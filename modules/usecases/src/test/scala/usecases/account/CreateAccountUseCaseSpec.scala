@@ -8,9 +8,9 @@ import gateway.repositories.AccountRepository
 import gateway.services.EncryptService
 import org.scalatest.FreeSpec
 
-class AccountCreateUseCaseSpec extends FreeSpec {
+class CreateAccountUseCaseSpec extends FreeSpec {
 
-  "AccountCreateUseCase" - {
+  "CreateAccountUseCase" - {
     val account = Account.generateResolved(
       AccountId("1"),
       Email.generate("a@a.com").right.get,
@@ -24,16 +24,16 @@ class AccountCreateUseCaseSpec extends FreeSpec {
     val accountRepository: AccountRepository[Id] = new AccountRepository[Id] {
       override def findBy(email: Email): Id[Option[ResolvedAccount]] = email.value.value match {
         case "a@a.com" => Some(account)
-        case _ => None
+        case _         => None
       }
-      override def resolveById(id: AccountId): Id[Account]           = account
-      override def store(aggregate: Account): Id[Long]               = 1L
+      override def resolveById(id: AccountId): Id[Account] = account
+      override def store(aggregate: Account): Id[Long]     = 1L
     }
     val encryptService: EncryptService[Id] = new EncryptService[Id] {
       override def encrypt(value: String): Id[String]                   = "xxx"
       override def matches(value0: String, value1: String): Id[Boolean] = ???
     }
-    val useCase: AccountCreateUseCase[Id] = new AccountCreateUseCase[Id](
+    val useCase: CreateAccountUseCase[Id] = new CreateAccountUseCase[Id](
       accountIdGenerator,
       accountRepository,
       encryptService

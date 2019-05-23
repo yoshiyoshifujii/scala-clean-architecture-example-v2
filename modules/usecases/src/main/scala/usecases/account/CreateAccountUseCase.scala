@@ -11,7 +11,7 @@ import usecases.{ UseCase, UseCaseMonadError, _ }
 case class AccountCreateInput(email: String, password: String, name: String)
 case class AccountCreateOutput(id: String)
 
-class AccountCreateUseCase[F[_]](
+class CreateAccountUseCase[F[_]](
     accountIdGenerator: AccountIdGenerator[F],
     accountRepository: AccountRepository[F],
     encryptService: EncryptService[F]

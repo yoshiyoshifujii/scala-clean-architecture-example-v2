@@ -40,7 +40,10 @@ lazy val `usecases` = (project in file("modules/usecases"))
 lazy val `interfaces` = (project in file("modules/interfaces"))
   .settings(
     name := s"$baseName-interfaces",
-    libraryDependencies ++= Seq()
+    libraryDependencies ++= Seq(
+      Scalaz.zio,
+      Wvlet.airframe
+    )
   )
   .settings(coreSettings)
   .dependsOn(`usecases`)
