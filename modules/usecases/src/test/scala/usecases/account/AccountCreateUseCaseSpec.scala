@@ -19,10 +19,13 @@ class AccountCreateUseCaseSpec extends FreeSpec {
     )
 
     val accountIdGenerator: AccountIdGenerator[Id] = new AccountIdGenerator[Id] {
-      override def generate: Id[AccountId] = account.id
+      override def generate: Id[AccountId] = AccountId("2")
     }
     val accountRepository: AccountRepository[Id] = new AccountRepository[Id] {
-      override def findBy(email: Email): Id[Option[ResolvedAccount]] = Some(account)
+      override def findBy(email: Email): Id[Option[ResolvedAccount]] = email.value.value match {
+        case "a@a.com" => Some(account)
+        case _ => None
+      }
       override def resolveById(id: AccountId): Id[Account]           = account
       override def store(aggregate: Account): Id[Long]               = 1L
     }
@@ -37,25 +40,48 @@ class AccountCreateUseCaseSpec extends FreeSpec {
     )
     import usecases.SampleInterfacesLayer.SampleErrors._
 
-    "success" in {
+    "success - already exists" in {
       assert(
         useCase.execute(AccountCreateInput(email = "a@a.com", password = "hogeHoge123", name = "hoge hogeo")).id === "1"
       )
     }
 
-    "fail - bad email address" in {
-      assertThrows[Exception](
-        useCase.execute(AccountCreateInput(email = "", password = "hogeHoge123", name = "hoge hogeo"))
+    "success - new" in {
+      assert(
+        useCase.execute(AccountCreateInput(email = "b@b.com", password = "fugaFuga123", name = "fuga fugao")).id === "2"
       )
-      assertThrows[Exception](
-        useCase.execute(
-          AccountCreateInput(
-            email =
-              "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
-            password = "hogeHoge123",
-            name = "hoge hogeo"
+    }
+
+    "fail - bad email address" in {
+      assert(
+        intercept[Exception](
+          useCase.execute(AccountCreateInput(email = "", password = "hogeHoge123", name = "hoge hogeo"))
+        ).getMessage === "UseCaseApplicationError(Predicate taking size() = 0 failed: Left predicate of (!(0 < 1) && !(0 > 100)) failed: Predicate (0 < 1) did not fail.)"
+      )
+      assert(
+        intercept[Exception](
+          useCase.execute(
+            AccountCreateInput(
+              email =
+                "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+              password = "hogeHoge123",
+              name = "hoge hogeo"
+            )
           )
-        )
+        ).getMessage === "UseCaseApplicationError(Predicate taking size(aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa) = 101 failed: Right predicate of (!(101 < 1) && !(101 > 100)) failed: Predicate (101 > 100) did not fail.)"
+      )
+    }
+
+    "fail - bad password" in {
+      assert(
+        intercept[Exception](
+          useCase.execute(AccountCreateInput(email = "a@a.com", password = "", name = "hoge hogeo"))
+        ).getMessage === """UseCaseApplicationError(Predicate failed: "".matches("[0-9a-zA-Z]{8,48}").)"""
+      )
+      assert(
+        intercept[Exception](
+          useCase.execute(AccountCreateInput(email = "a@a.com", password = "hoge", name = "hoge hogeo"))
+        ).getMessage === """UseCaseApplicationError(Predicate failed: "hoge".matches("[0-9a-zA-Z]{8,48}").)"""
       )
     }
   }
