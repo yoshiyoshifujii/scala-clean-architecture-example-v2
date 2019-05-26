@@ -1,0 +1,3 @@
+package services trait EncryptService {
+
+}

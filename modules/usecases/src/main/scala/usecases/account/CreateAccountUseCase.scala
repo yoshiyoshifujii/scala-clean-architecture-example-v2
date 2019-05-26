@@ -1,15 +1,15 @@
 package usecases.account
 
 import cats.implicits._
-import domain.account.{ Account, AccountName, EncryptedPassword, PlainPassword }
+import domain.account.{ Account, AccountId, AccountName, EncryptedPassword, PlainPassword }
 import domain.common.Email
 import gateway.generators.AccountIdGenerator
 import gateway.repositories.AccountRepository
 import gateway.services.EncryptService
 import usecases.{ UseCase, UseCaseMonadError, _ }
 
-case class AccountCreateInput(email: String, password: String, name: String)
-case class AccountCreateOutput(id: String)
+case class AccountCreateInput(email: Email, password: PlainPassword, name: AccountName)
+case class AccountCreateOutput(id: AccountId)
 
 class CreateAccountUseCase[F[_]](
     accountIdGenerator: AccountIdGenerator[F],
@@ -19,21 +19,18 @@ class CreateAccountUseCase[F[_]](
 
   override def execute(inputData: AccountCreateInput)(implicit ME: UseCaseMonadError[F]): F[AccountCreateOutput] =
     for {
-      email    <- Email.generate(inputData.email).toF
-      password <- PlainPassword.generate(inputData.password).toF
-      name     <- AccountName.generate(inputData.name).toF
-      maybe    <- accountRepository.findBy(email)
+      maybe <- accountRepository.findBy(inputData.email)
       stored <- maybe match {
         case Some(account) => ME.pure(account)
         case None =>
           for {
             id        <- accountIdGenerator.generate
-            encrypted <- encryptService.encrypt(password.value.value)
+            encrypted <- encryptService.encrypt(inputData.password.value.value)
             _ <- accountRepository.store(
-              Account.generate(id, email, name, EncryptedPassword(encrypted))
+              Account.generate(id, inputData.email, inputData.name, EncryptedPassword(encrypted))
             )
-          } yield Account.generateResolved(id, email, name, EncryptedPassword(encrypted))
+          } yield Account.generateResolved(id, inputData.email, inputData.name, EncryptedPassword(encrypted))
       }
-    } yield AccountCreateOutput(stored.id.value)
+    } yield AccountCreateOutput(stored.id)
 
 }

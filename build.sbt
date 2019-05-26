@@ -41,8 +41,15 @@ lazy val `interfaces` = (project in file("modules/interfaces"))
   .settings(
     name := s"$baseName-interfaces",
     libraryDependencies ++= Seq(
+      Slf4j.api,
       Scalaz.zio,
-      Wvlet.airframe
+      Wvlet.airframe,
+      AkkaHttp.http,
+      Akka.stream,
+      Heikoseeberger.circe,
+      Circe.core,
+      Circe.generic,
+      Circe.parser
     )
   )
   .settings(coreSettings)

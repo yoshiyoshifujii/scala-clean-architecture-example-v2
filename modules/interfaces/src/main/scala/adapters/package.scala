@@ -3,7 +3,7 @@ import usecases.UseCaseError
 
 package object adapters {
 
-  type AppType = String
+  type AppType   = String
   type Effect[A] = ZIO[AppType, UseCaseError, A]
 
 }

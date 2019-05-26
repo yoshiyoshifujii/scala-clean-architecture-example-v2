@@ -45,3 +45,30 @@ object Timepit {
   val version = "0.9.5"
   val refined = "eu.timepit" %% "refined" % version
 }
+
+object Akka {
+  val version = "2.5.19"
+  val stream = "com.typesafe.akka" %% "akka-stream" % version
+}
+
+object AkkaHttp {
+  val version = "10.1.8"
+  val http = "com.typesafe.akka" %% "akka-http" % version
+}
+
+object Heikoseeberger {
+  val version = "1.25.2"
+  val circe = "de.heikoseeberger" %% "akka-http-circe" % version
+}
+
+object Circe {
+  val version = "0.11.1"
+  val core = "io.circe" %% "circe-core" % version
+  val generic = "io.circe" %% "circe-generic" % version
+  val parser = "io.circe" %% "circe-parser" % version
+}
+
+object Slf4j {
+  val version = "1.7.25"
+  val api = "org.slf4j" % "slf4j-api" % version
+}
