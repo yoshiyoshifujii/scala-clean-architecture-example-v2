@@ -1,7 +1,7 @@
 package domain.account
 
 import cats.implicits._
-import domain.DomainError
+import domain.{ DomainError, DomainValidationResult }
 import eu.timepit.refined.W
 import eu.timepit.refined.api.RefType.applyRef
 import eu.timepit.refined.api.Refined
@@ -12,6 +12,6 @@ final case class PlainPassword(value: PlainPassword.AsString)
 object PlainPassword {
   type AsString = String Refined MatchesRegex[W.`"[0-9a-zA-Z]{8,48}"`.T]
 
-  val generate: String => Either[DomainError, PlainPassword] =
-    applyRef[AsString](_).leftMap(DomainError).map(new PlainPassword(_))
+  val generate: String => DomainValidationResult[PlainPassword] =
+    applyRef[AsString](_).leftMap(DomainError).map(new PlainPassword(_)).toValidatedNel
 }

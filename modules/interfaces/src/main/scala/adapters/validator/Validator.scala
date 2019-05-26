@@ -1,5 +1,5 @@
 package adapters.validator
 
-trait Validator {
-
+trait Validator[A, B] {
+  def validate(value: A): ValidationResult[B]
 }

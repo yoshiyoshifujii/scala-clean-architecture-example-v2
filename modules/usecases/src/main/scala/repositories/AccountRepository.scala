@@ -1,4 +1,4 @@
-package gateway.repositories
+package repositories
 
 import com.github.j5ik2o.dddbase.{ AggregateSingleReader, AggregateSingleWriter }
 import domain.account.{ Account, AccountId, ResolvedAccount }

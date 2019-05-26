@@ -72,3 +72,8 @@ object Slf4j {
   val version = "1.7.25"
   val api = "org.slf4j" % "slf4j-api" % version
 }
+
+object Huxhorn {
+  val version = "8.2.0"
+  val ulid = "de.huxhorn.sulky" % "de.huxhorn.sulky.ulid" % version
+}

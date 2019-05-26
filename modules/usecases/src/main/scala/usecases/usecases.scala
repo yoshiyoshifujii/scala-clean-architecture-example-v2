@@ -1,5 +1,5 @@
 import cats.MonadError
-import domain.{ DomainError, DomainValidationResult }
+import domain.DomainValidationResult
 
 package object usecases {
 
@@ -12,13 +12,4 @@ package object usecases {
         ME.pure
       )
   }
-
-  implicit class EitherDomainError2MonadError[A](val v: Either[DomainError, A]) extends AnyVal {
-    def toF[F[_]](implicit ME: UseCaseMonadError[F]): F[A] =
-      v.fold(
-        de => ME.raiseError(UseCaseApplicationError(de.message)),
-        ME.pure
-      )
-  }
-
 }

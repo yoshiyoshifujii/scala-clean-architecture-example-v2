@@ -1,26 +1,33 @@
 package usecases.account
 
 import cats.Id
-import domain.account.{ Account, AccountId, AccountName, EncryptedPassword, ResolvedAccount }
+import domain.account._
 import domain.common.Email
-import gateway.generators.AccountIdGenerator
-import gateway.repositories.AccountRepository
-import gateway.services.EncryptService
+import repositories.AccountRepository
+import infrastructure.ulid.ULID
 import org.scalatest.FreeSpec
+import services.EncryptService
 
 class CreateAccountUseCaseSpec extends FreeSpec {
 
   "CreateAccountUseCase" - {
+    val email1 = Email.generate("a@a.com").toOption.get
+    val email2 = Email.generate("b@b.com").toOption.get
+    val accountName1 = AccountName.generate("hoge hogeo").toOption.get
+    val accountName2 = AccountName.generate("fuga fugao").toOption.get
+    val plainPassword1 = PlainPassword.generate("hogeHoge123").toOption.get
+    val plainPassword2 = PlainPassword.generate("fugaFuga123").toOption.get
+
+    val ulid1 = ULID()
+    val accountId1 = AccountId(ulid1)
+
     val account = Account.generateResolved(
-      AccountId("1"),
-      Email.generate("a@a.com").right.get,
-      AccountName.generate("hoge hogeo").right.get,
+      accountId1,
+      email1,
+      accountName1,
       EncryptedPassword("xxx")
     )
 
-    val accountIdGenerator: AccountIdGenerator[Id] = new AccountIdGenerator[Id] {
-      override def generate: Id[AccountId] = AccountId("2")
-    }
     val accountRepository: AccountRepository[Id] = new AccountRepository[Id] {
       override def findBy(email: Email): Id[Option[ResolvedAccount]] = email.value.value match {
         case "a@a.com" => Some(account)
@@ -34,7 +41,6 @@ class CreateAccountUseCaseSpec extends FreeSpec {
       override def matches(value0: String, value1: String): Id[Boolean] = ???
     }
     val useCase: CreateAccountUseCase[Id] = new CreateAccountUseCase[Id](
-      accountIdGenerator,
       accountRepository,
       encryptService
     )
@@ -42,48 +48,16 @@ class CreateAccountUseCaseSpec extends FreeSpec {
 
     "success - already exists" in {
       assert(
-        useCase.execute(AccountCreateInput(email = "a@a.com", password = "hogeHoge123", name = "hoge hogeo")).id === "1"
+        useCase.execute(AccountCreateInput(email = email1, password = plainPassword1, name = accountName1)).id.breachEncapsulationOfValue === ulid1
       )
     }
 
     "success - new" in {
       assert(
-        useCase.execute(AccountCreateInput(email = "b@b.com", password = "fugaFuga123", name = "fuga fugao")).id === "2"
+        useCase.execute(AccountCreateInput(email = email2, password = plainPassword2, name = accountName2)).id.breachEncapsulationOfValue !== ulid1
       )
     }
 
-    "fail - bad email address" in {
-      assert(
-        intercept[Exception](
-          useCase.execute(AccountCreateInput(email = "", password = "hogeHoge123", name = "hoge hogeo"))
-        ).getMessage === "UseCaseApplicationError(Predicate taking size() = 0 failed: Left predicate of (!(0 < 1) && !(0 > 100)) failed: Predicate (0 < 1) did not fail.)"
-      )
-      assert(
-        intercept[Exception](
-          useCase.execute(
-            AccountCreateInput(
-              email =
-                "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
-              password = "hogeHoge123",
-              name = "hoge hogeo"
-            )
-          )
-        ).getMessage === "UseCaseApplicationError(Predicate taking size(aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa) = 101 failed: Right predicate of (!(101 < 1) && !(101 > 100)) failed: Predicate (101 > 100) did not fail.)"
-      )
-    }
-
-    "fail - bad password" in {
-      assert(
-        intercept[Exception](
-          useCase.execute(AccountCreateInput(email = "a@a.com", password = "", name = "hoge hogeo"))
-        ).getMessage === """UseCaseApplicationError(Predicate failed: "".matches("[0-9a-zA-Z]{8,48}").)"""
-      )
-      assert(
-        intercept[Exception](
-          useCase.execute(AccountCreateInput(email = "a@a.com", password = "hoge", name = "hoge hogeo"))
-        ).getMessage === """UseCaseApplicationError(Predicate failed: "hoge".matches("[0-9a-zA-Z]{8,48}").)"""
-      )
-    }
   }
 
 }

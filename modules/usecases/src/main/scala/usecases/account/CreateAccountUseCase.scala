@@ -1,18 +1,16 @@
 package usecases.account
 
 import cats.implicits._
-import domain.account.{ Account, AccountId, AccountName, EncryptedPassword, PlainPassword }
+import domain.account._
 import domain.common.Email
-import gateway.generators.AccountIdGenerator
-import gateway.repositories.AccountRepository
-import gateway.services.EncryptService
-import usecases.{ UseCase, UseCaseMonadError, _ }
+import repositories.AccountRepository
+import services.EncryptService
+import usecases.{ UseCase, UseCaseMonadError }
 
 case class AccountCreateInput(email: Email, password: PlainPassword, name: AccountName)
 case class AccountCreateOutput(id: AccountId)
 
 class CreateAccountUseCase[F[_]](
-    accountIdGenerator: AccountIdGenerator[F],
     accountRepository: AccountRepository[F],
     encryptService: EncryptService[F]
 ) extends UseCase[F, AccountCreateInput, AccountCreateOutput] {
@@ -23,8 +21,8 @@ class CreateAccountUseCase[F[_]](
       stored <- maybe match {
         case Some(account) => ME.pure(account)
         case None =>
+          val id = AccountId()
           for {
-            id        <- accountIdGenerator.generate
             encrypted <- encryptService.encrypt(inputData.password.value.value)
             _ <- accountRepository.store(
               Account.generate(id, inputData.email, inputData.name, EncryptedPassword(encrypted))

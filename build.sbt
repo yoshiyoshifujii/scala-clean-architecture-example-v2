@@ -7,7 +7,9 @@ lazy val `infrastructure` = (project in file("modules/infrastructure"))
     name := s"$baseName-infrastructure",
     libraryDependencies ++= Seq(
       Passay.passay,
-      Commons.codec
+      Commons.codec,
+      Huxhorn.ulid,
+      Timepit.refined
     )
   )
   .settings(coreSettings)
@@ -19,8 +21,7 @@ lazy val `domain` = (project in file("modules/domain"))
       ScalaDDDBase.core,
       Cats.core,
       Cats.free,
-      Beachape.enumeratum,
-      Timepit.refined
+      Beachape.enumeratum
     )
   )
   .settings(coreSettings)

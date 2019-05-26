@@ -1,20 +1,24 @@
 package adapters.http.controllers
 
-import adapters.Effect
 import adapters.http.directives.ValidateDirectives
 import adapters.http.json.CreateAccountRequestJson
 import adapters.http.presenters.CreateAccountPresenter
+import adapters.{ AppType, Effect }
 import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.server.Route
-import usecases.account.CreateAccountUseCase
 import de.heikoseeberger.akkahttpcirce.FailFastCirceSupport._
 import io.circe.generic.auto._
+import usecases.account.CreateAccountUseCase
 import wvlet.airframe._
 
-trait Controller extends ValidateDirectives {
+trait Controller {
+  import ValidateDirectives._
+  import adapters.errors.Errors._
 
-  private val createAccountUseCase: CreateAccountUseCase[Effect]     = bind[CreateAccountUseCase[Effect]]
-  private val createAccountPresenter: CreateAccountPresenter[Effect] = bind[CreateAccountPresenter[Effect]]
+  private val runtime = bind[scalaz.zio.Runtime[AppType]]
+
+  private val createAccountUseCase   = bind[CreateAccountUseCase[Effect]]
+  private val createAccountPresenter = bind[CreateAccountPresenter]
 
   def toRoutes: Route =
     createAccount
@@ -23,9 +27,15 @@ trait Controller extends ValidateDirectives {
     path("accounts") {
       post {
         entity(as[CreateAccountRequestJson]) { json =>
-          createAccountPresenter.response(createAccountUseCase.execute(json))
+          validateJsonRequest(json).apply { inputData =>
+            val responseFuture = runtime.unsafeRunToFuture {
+              createAccountPresenter.response(createAccountUseCase.execute(inputData))
+            }
+            onSuccess(responseFuture) { response =>
+              complete(response)
+            }
+          }
         }
-        ???
       }
     }
 }

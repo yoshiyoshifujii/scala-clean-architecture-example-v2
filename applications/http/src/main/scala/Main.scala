@@ -1,5 +1,5 @@
-import adapters.{DISettings, Effect}
 import adapters.http.controllers.Controller
+import adapters.{ AppType, DISettings }
 import akka.actor.ActorSystem
 import akka.http.scaladsl.Http
 import akka.stream.ActorMaterializer
@@ -17,8 +17,9 @@ object Main extends App {
   implicit val materializer: ActorMaterializer            = ActorMaterializer()
   implicit val executionContext: ExecutionContextExecutor = system.dispatcher
 
-  private val design = DISettings.design
-  private val session = design.newSession
+  private val environment: AppType = ""
+  private val design               = DISettings.design(environment)
+  private val session              = design.newSession
   session.start
 
   val controller = session.build[Controller]
