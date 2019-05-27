@@ -5,7 +5,7 @@ import domain.account._
 import domain.common.Email
 import repositories.AccountRepository
 import services.EncryptService
-import usecases.{ UseCase, UseCaseMonadError }
+import usecases.{ UseCase, UseCaseApplicationError, UseCaseMonadError }
 
 case class AccountCreateInput(email: Email, password: PlainPassword, name: AccountName)
 case class AccountCreateOutput(id: AccountId)
@@ -19,15 +19,15 @@ class CreateAccountUseCase[F[_]](
     for {
       maybe <- accountRepository.findBy(inputData.email)
       stored <- maybe match {
-        case Some(account) => ME.pure(account)
+        case Some(_) =>
+          ME.raiseError[ResolvedAccount](UseCaseApplicationError("already exists."))
         case None =>
           val id = AccountId()
           for {
             encrypted <- encryptService.encrypt(inputData.password.value.value)
-            _ <- accountRepository.store(
-              Account.generate(id, inputData.email, inputData.name, EncryptedPassword(encrypted))
-            )
-          } yield Account.generateResolved(id, inputData.email, inputData.name, EncryptedPassword(encrypted))
+            generated = Account.generate(id, inputData.email, inputData.name, EncryptedPassword(encrypted))
+            _ <- accountRepository.store(generated)
+          } yield Account.generateResolved(generated.id, generated.email, generated.name, generated.password)
       }
     } yield AccountCreateOutput(stored.id)
 

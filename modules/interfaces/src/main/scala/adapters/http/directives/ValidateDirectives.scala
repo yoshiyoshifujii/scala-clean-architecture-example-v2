@@ -25,9 +25,9 @@ object ValidateDirectives extends ValidateDirectives {
   implicit object CreateAccountRequestJsonValidator extends Validator[CreateAccountRequestJson, AccountCreateInput] {
     override def validate(value: CreateAccountRequestJson): ValidationResult[AccountCreateInput] =
       (
-        Email.generate(value.email),
-        PlainPassword.generate(value.password),
-        AccountName.generate(value.name)
+        Email.validate(value.email),
+        PlainPassword.validate(value.password),
+        AccountName.validate(value.name)
       ).mapN {
         case (email, password, name) =>
           AccountCreateInput(email, password, name)

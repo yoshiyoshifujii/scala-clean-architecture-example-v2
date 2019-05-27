@@ -40,8 +40,6 @@ trait DISettings {
     designOfRuntime(environment)
       .add(designOfRepositories)
       .add(designOfServices)
-      .add(designOfHttpControllers)
-      .add(designOfHttpPresenters)
 
 }
 

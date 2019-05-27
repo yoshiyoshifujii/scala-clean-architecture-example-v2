@@ -6,16 +6,16 @@ import usecases.{ UseCaseApplicationError, UseCaseSystemError }
 
 trait Presenter[OutputData, ViewModel] {
 
-  def response(res: Effect[OutputData]): ZIO[AppType, Nothing, ViewModel] =
-    res.fold(
+  def response(res: Effect[OutputData]): ZIO[AppType, Throwable, ViewModel] =
+    res.foldM(
       {
-        case appError: UseCaseApplicationError => response(appError)
-        case UseCaseSystemError(cause)         => throw cause
+        case appError: UseCaseApplicationError => ZIO.succeed(convert(appError))
+        case UseCaseSystemError(cause)         => ZIO.fail(cause)
       },
-      response
+      success => ZIO.succeed(convert(success))
     )
 
-  protected def response(outputData: OutputData): ViewModel
-  protected def response(useCaseApplicationError: UseCaseApplicationError): ViewModel
+  protected def convert(outputData: OutputData): ViewModel
+  protected def convert(useCaseApplicationError: UseCaseApplicationError): ViewModel
 
 }

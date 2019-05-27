@@ -11,14 +11,14 @@ import services.EncryptService
 class CreateAccountUseCaseSpec extends FreeSpec {
 
   "CreateAccountUseCase" - {
-    val email1 = Email.generate("a@a.com").toOption.get
-    val email2 = Email.generate("b@b.com").toOption.get
-    val accountName1 = AccountName.generate("hoge hogeo").toOption.get
-    val accountName2 = AccountName.generate("fuga fugao").toOption.get
-    val plainPassword1 = PlainPassword.generate("hogeHoge123").toOption.get
-    val plainPassword2 = PlainPassword.generate("fugaFuga123").toOption.get
+    val email1         = Email.generate("a@a.com")
+    val email2         = Email.generate("b@b.com")
+    val accountName1   = AccountName.generate("hoge hogeo")
+    val accountName2   = AccountName.generate("fuga fugao")
+    val plainPassword1 = PlainPassword.generate("hogeHoge123")
+    val plainPassword2 = PlainPassword.generate("fugaFuga123")
 
-    val ulid1 = ULID()
+    val ulid1      = ULID()
     val accountId1 = AccountId(ulid1)
 
     val account = Account.generateResolved(
@@ -48,13 +48,16 @@ class CreateAccountUseCaseSpec extends FreeSpec {
 
     "success - already exists" in {
       assert(
-        useCase.execute(AccountCreateInput(email = email1, password = plainPassword1, name = accountName1)).id.breachEncapsulationOfValue === ulid1
+        intercept[Exception](
+          useCase.execute(AccountCreateInput(email = email1, password = plainPassword1, name = accountName1))
+        ).getMessage === "UseCaseApplicationError(already exists.)"
       )
     }
 
     "success - new" in {
       assert(
-        useCase.execute(AccountCreateInput(email = email2, password = plainPassword2, name = accountName2)).id.breachEncapsulationOfValue !== ulid1
+        useCase
+          .execute(AccountCreateInput(email = email2, password = plainPassword2, name = accountName2)).id.breachEncapsulationOfValue !== ulid1
       )
     }
 

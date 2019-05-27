@@ -14,4 +14,14 @@ package object domain {
       self.withNameOption(name).map(_.validNel).getOrElse(DomainError(s"$name is not a member").invalidNel)
   }
 
+  trait Validator[A, B] {
+    val validate: A => DomainValidationResult[B]
+  }
+
+  trait Generator[A, B] {
+    self: Validator[A, B] =>
+    val generate: A => B = validate(_).toOption.get
+  }
+
+  trait ValueObject[A, B] extends Validator[A, B] with Generator[A, B]
 }

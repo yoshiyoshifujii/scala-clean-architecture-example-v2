@@ -13,7 +13,7 @@ object Main extends App {
   private val port   = 8000
   private val config = ConfigFactory.load()
 
-  implicit val system: ActorSystem                        = ActorSystem("gaudi-poc", config)
+  implicit val system: ActorSystem                        = ActorSystem("sample", config)
   implicit val materializer: ActorMaterializer            = ActorMaterializer()
   implicit val executionContext: ExecutionContextExecutor = system.dispatcher
 
