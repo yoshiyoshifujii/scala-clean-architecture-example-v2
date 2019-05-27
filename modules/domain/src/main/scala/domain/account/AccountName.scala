@@ -1,7 +1,7 @@
 package domain.account
 
 import cats.implicits._
-import domain.{DomainError, DomainValidationResult, ValueObject}
+import domain.{ DomainError, DomainValidationResult, ValueObject }
 import eu.timepit.refined.W
 import eu.timepit.refined.api.RefType.applyRef
 import eu.timepit.refined.api.Refined

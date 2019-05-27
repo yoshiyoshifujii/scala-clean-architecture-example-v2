@@ -1,7 +1,7 @@
 package adapters.gateway.repositories
 
 import adapters.Effect
-import domain.account.{Account, AccountId, ResolvedAccount}
+import domain.account.{ Account, AccountId, ResolvedAccount }
 import domain.common.Email
 import repositories.AccountRepository
 import scalaz.zio.ZIO
