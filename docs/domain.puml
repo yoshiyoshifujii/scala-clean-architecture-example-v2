@@ -1,0 +1,25 @@
+@startuml
+
+interface Account
+
+interface Customer
+
+interface Building
+
+interface Project
+
+interface ConstructionImage
+
+interface TagManager
+interface Tag
+
+Project o-- Customer
+Project o-- Account
+Project o-- Building
+
+Project --o ConstructionImage
+
+ConstructionImage --o TagManager
+Tag --o TagManager
+
+@enduml
