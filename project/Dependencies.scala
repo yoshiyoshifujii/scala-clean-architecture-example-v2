@@ -21,7 +21,7 @@ object Scalaz {
 }
 
 object ScalaDDDBase {
-  val version = "1.0.26"
+  val version = "1.0.27"
   val core    = "com.github.j5ik2o" %% "scala-ddd-base-core" % version
 }
 

@@ -1,12 +1,13 @@
 package adapters
 
-import adapters.gateway.repositories.AccountRepositoryOnRDB
+import adapters.gateway.repositories.slick.AccountRepositoryBySlick
 import adapters.gateway.services.EncryptServiceOnBCrypt
 import adapters.http.controllers.Controller
 import adapters.http.presenters.CreateAccountPresenter
 import repositories.AccountRepository
-import scalaz.zio.internal.{ Platform, PlatformLive }
+import scalaz.zio.internal.{Platform, PlatformLive}
 import services.EncryptService
+import slick.jdbc.JdbcProfile
 import wvlet.airframe._
 
 trait DISettings {
@@ -20,9 +21,14 @@ trait DISettings {
         }
       }
 
+  private[adapters] def designOfSlick(profile: JdbcProfile, db: JdbcProfile#Backend#Database): Design =
+    newDesign
+      .bind[JdbcProfile].toInstance(profile)
+      .bind[JdbcProfile#Backend#Database].toInstance(db)
+
   private[adapters] def designOfRepositories: Design =
     newDesign
-      .bind[AccountRepository[Effect]].to[AccountRepositoryOnRDB]
+      .bind[AccountRepository[Effect]].to[AccountRepositoryBySlick]
 
   private[adapters] def designOfServices: Design =
     newDesign
@@ -38,6 +44,7 @@ trait DISettings {
 
   def design(environment: AppType): Design =
     designOfRuntime(environment)
+      .add(designOfSlick(environment.rdbService.profile, environment.rdbService.db))
       .add(designOfRepositories)
       .add(designOfServices)
 

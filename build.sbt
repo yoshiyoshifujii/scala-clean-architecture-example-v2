@@ -157,7 +157,7 @@ lazy val `interfaces` = (project in file("modules/interfaces"))
     outputDirectoryMapper in generator := {
       case s if s.endsWith("Spec") => (sourceDirectory in Test).value
       case s =>
-        new java.io.File((scalaSource in Compile).value, "/com/chatwork/gaudi/adaptor/dao/jdbc")
+        new java.io.File((scalaSource in Compile).value, "/adapters/dao/jdbc")
     },
     // モデル名に対してどのテンプレートを利用するか指定できます。
     templateNameMapper in generator := {
