@@ -1,3 +1,5 @@
+package http
+
 import adapters.dao.jdbc.RDB
 import adapters.http.controllers.Controller
 import adapters.{ AppType, DISettings }

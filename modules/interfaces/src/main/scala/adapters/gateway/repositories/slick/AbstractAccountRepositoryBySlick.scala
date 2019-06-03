@@ -2,8 +2,8 @@ package adapters.gateway.repositories.slick
 
 import adapters.Effect
 import adapters.dao.jdbc.AccountComponent
-import adapters.gateway.repositories.slick.common.{AggregateSingleReadFeature, AggregateSingleWriteFeature}
-import domain.account.{Account, AccountId, AccountName, EncryptedPassword}
+import adapters.gateway.repositories.slick.common.{ AggregateSingleReadFeature, AggregateSingleWriteFeature }
+import domain.account.{ Account, AccountId, AccountName, EncryptedPassword }
 import domain.common.Email
 import infrastructure.ulid.ULID
 import repositories.AccountRepository

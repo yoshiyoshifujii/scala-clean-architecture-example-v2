@@ -1,11 +1,11 @@
 package adapters
 
 import adapters.gateway.repositories.slick.AccountRepositoryBySlick
-import adapters.gateway.services.EncryptServiceOnBCrypt
+import adapters.gateway.services.EncryptServiceByBCrypt
 import adapters.http.controllers.Controller
 import adapters.http.presenters.CreateAccountPresenter
 import repositories.AccountRepository
-import scalaz.zio.internal.{Platform, PlatformLive}
+import scalaz.zio.internal.{ Platform, PlatformLive }
 import services.EncryptService
 import slick.jdbc.JdbcProfile
 import wvlet.airframe._
@@ -32,7 +32,7 @@ trait DISettings {
 
   private[adapters] def designOfServices: Design =
     newDesign
-      .bind[EncryptService[Effect]].to[EncryptServiceOnBCrypt]
+      .bind[EncryptService[Effect]].to[EncryptServiceByBCrypt]
 
   private[adapters] def designOfHttpPresenters: Design =
     newDesign

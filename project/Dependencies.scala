@@ -23,6 +23,7 @@ object Scalaz {
 object ScalaDDDBase {
   val version = "1.0.27"
   val core    = "com.github.j5ik2o" %% "scala-ddd-base-core" % version
+  val memory  = "com.github.j5ik2o" %% "scala-ddd-base-memory" % version
 }
 
 object Cats {
@@ -94,4 +95,14 @@ object Slick {
 object Debasishg {
   val version     = "3.9"
   val redisclient = "net.debasishg" %% "redisclient" % version
+}
+
+object T3hnar {
+  val version = "4.0"
+  val bCrypt  = "com.github.t3hnar" %% "scala-bcrypt" % version
+}
+
+object Google {
+  val version = "27.1-jre"
+  val guava   = "com.google.guava"   % "guava" % version
 }

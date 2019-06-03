@@ -121,7 +121,10 @@ lazy val `interfaces` = (project in file("modules/interfaces"))
         MySQL.connector,
         Slick.slick,
         Slick.hikaricp,
-        Debasishg.redisclient
+        Debasishg.redisclient,
+        T3hnar.bCrypt,
+        ScalaDDDBase.memory % Test,
+        Google.guava % Test
       ),
     // sbt-dao-generator
     // JDBCのドライバークラス名を指定します(必須)
