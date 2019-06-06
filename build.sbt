@@ -124,7 +124,8 @@ lazy val `interfaces` = (project in file("modules/interfaces"))
         Debasishg.redisclient,
         T3hnar.bCrypt,
         ScalaDDDBase.memory % Test,
-        Google.guava % Test
+        Google.guava        % Test,
+        ScalaTestPlus.db    % Test
       ),
     // sbt-dao-generator
     // JDBCのドライバークラス名を指定します(必須)

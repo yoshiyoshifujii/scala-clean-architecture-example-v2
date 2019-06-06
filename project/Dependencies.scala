@@ -5,6 +5,11 @@ object ScalaTest {
   val core    = "org.scalatest" %% "scalatest" % version
 }
 
+object ScalaTestPlus {
+  val version = "1.0.8"
+  val db      = "com.github.j5ik2o" %% "scalatestplus-db" % version
+}
+
 object Passay {
   val version = "1.3.0"
   val passay  = "org.passay" % "passay" % version
@@ -104,5 +109,5 @@ object T3hnar {
 
 object Google {
   val version = "27.1-jre"
-  val guava   = "com.google.guava"   % "guava" % version
+  val guava   = "com.google.guava" % "guava" % version
 }
