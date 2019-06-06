@@ -15,7 +15,7 @@ trait Controller {
   import ValidateDirectives._
   import adapters.errors.Errors._
 
-  private val runtime = bind[scalaz.zio.Runtime[AppType]]
+  private implicit val runtime: scalaz.zio.Runtime[AppType] = bind[scalaz.zio.Runtime[AppType]]
 
   private val createAccountUseCase   = bind[CreateAccountUseCase[Effect]]
   private val createAccountPresenter = bind[CreateAccountPresenter]
@@ -28,12 +28,7 @@ trait Controller {
       post {
         entity(as[CreateAccountRequestJson]) { json =>
           validateJsonRequest(json).apply { inputData =>
-            val responseFuture = runtime.unsafeRunToFuture {
-              createAccountPresenter.response(createAccountUseCase.execute(inputData))
-            }
-            onSuccess(responseFuture) { response =>
-              complete(response)
-            }
+            createAccountPresenter.response(createAccountUseCase.execute(inputData))
           }
         }
       }

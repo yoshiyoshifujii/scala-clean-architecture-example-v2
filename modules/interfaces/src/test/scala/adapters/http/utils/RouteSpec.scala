@@ -4,12 +4,12 @@ import adapters.{ AppType, DISettings }
 import akka.http.scaladsl.testkit.{ RouteTestTimeout, ScalatestRouteTest }
 import akka.testkit.TestKit
 import de.heikoseeberger.akkahttpcirce.FailFastCirceSupport
-import org.scalatest.{ BeforeAndAfterAll, Matchers, TestSuite }
+import org.scalatest.{ BeforeAndAfterAll, TestSuite }
 import wvlet.airframe.{ newDesign, Design, Session }
 
 import scala.concurrent.duration._
 
-trait RouteSpec extends ScalatestRouteTest with Matchers with BeforeAndAfterAll with FailFastCirceSupport {
+trait RouteSpec extends ScalatestRouteTest with BeforeAndAfterAll with FailFastCirceSupport {
   this: TestSuite =>
 
   implicit def timeout: RouteTestTimeout = RouteTestTimeout(5 seconds)
