@@ -3,9 +3,9 @@ package usecases.account
 import cats.Id
 import domain.account._
 import domain.common.Email
-import repositories.AccountRepository
 import infrastructure.ulid.ULID
 import org.scalatest.FreeSpec
+import repositories.AccountRepository
 import services.EncryptService
 
 class CreateAccountUseCaseSpec extends FreeSpec {
@@ -35,6 +35,7 @@ class CreateAccountUseCaseSpec extends FreeSpec {
       }
       override def resolveById(id: AccountId): Id[Account] = account
       override def store(aggregate: Account): Id[Long]     = 1L
+      override def resolveAll: Id[Seq[Account]]            = ???
     }
     val encryptService: EncryptService[Id] = new EncryptService[Id] {
       override def encrypt(value: String): Id[String]                   = "xxx"
@@ -45,14 +46,6 @@ class CreateAccountUseCaseSpec extends FreeSpec {
       encryptService
     )
     import usecases.SampleInterfacesLayer.SampleErrors._
-
-    "success - already exists" in {
-      assert(
-        intercept[Exception](
-          useCase.execute(AccountCreateInput(email = email1, password = plainPassword1, name = accountName1))
-        ).getMessage === "UseCaseApplicationError(already exists.)"
-      )
-    }
 
     "success - new" in {
       assert(

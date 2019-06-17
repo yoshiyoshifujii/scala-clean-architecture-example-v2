@@ -168,7 +168,7 @@ lazy val `interfaces` = (project in file("modules/interfaces"))
       case className if className.endsWith("Spec") => "template_spec.ftl"
       case _                                       => "template.ftl"
     },
-    compile in Compile := ((compile in Compile) dependsOn (generateAll in generator)).value,
+    //compile in Compile := ((compile in Compile) dependsOn (generateAll in generator)).value,
     generateAll in generator := Def
         .taskDyn {
           val ga = (generateAll in generator).value
@@ -187,7 +187,10 @@ lazy val `interfaces` = (project in file("modules/interfaces"))
 
 lazy val `applications-http` = (project in file("applications/http"))
   .settings(
-    name := s"$baseName-applications-http"
+    name := s"$baseName-applications-http",
+    libraryDependencies ++= Seq(
+      Logback.classic
+    )
   )
   .settings(coreSettings)
   .dependsOn(`interfaces`)

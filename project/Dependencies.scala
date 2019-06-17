@@ -10,6 +10,11 @@ object ScalaTestPlus {
   val db      = "com.github.j5ik2o" %% "scalatestplus-db" % version
 }
 
+object Logback {
+  val version = "1.2.3"
+  val classic = "ch.qos.logback"     % "logback-classic"       % version
+}
+
 object Passay {
   val version = "1.3.0"
   val passay  = "org.passay" % "passay" % version
@@ -77,7 +82,7 @@ object Circe {
 }
 
 object Slf4j {
-  val version = "1.7.25"
+  val version = "1.7.26"
   val api     = "org.slf4j" % "slf4j-api" % version
 }
 
@@ -92,7 +97,7 @@ object MySQL {
 }
 
 object Slick {
-  val version  = "3.2.3"
+  val version  = "3.3.1"
   val slick    = "com.typesafe.slick" %% "slick" % version
   val hikaricp = "com.typesafe.slick" %% "slick-hikaricp" % version
 }

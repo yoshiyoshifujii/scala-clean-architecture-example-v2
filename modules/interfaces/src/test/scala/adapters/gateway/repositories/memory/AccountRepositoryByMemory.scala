@@ -2,7 +2,11 @@ package adapters.gateway.repositories.memory
 
 import adapters.Effect
 import adapters.dao.memory.AccountComponent
-import adapters.gateway.repositories.memory.common.{ AggregateSingleReadFeature, AggregateSingleWriteFeature }
+import adapters.gateway.repositories.memory.common.{
+  AggregateAllReadFeature,
+  AggregateSingleReadFeature,
+  AggregateSingleWriteFeature
+}
 import com.google.common.base.Ticker
 import domain.account._
 import domain.common.Email
@@ -28,6 +32,7 @@ class AccountRepositoryByMemory(
 ) extends AccountRepository[Effect]
     with AggregateSingleReadFeature
     with AggregateSingleWriteFeature
+    with AggregateAllReadFeature
     with AccountComponent {
 
   override type RecordType = AccountRecord

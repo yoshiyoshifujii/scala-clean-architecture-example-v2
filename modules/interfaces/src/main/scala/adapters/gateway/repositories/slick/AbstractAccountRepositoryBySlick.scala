@@ -2,7 +2,11 @@ package adapters.gateway.repositories.slick
 
 import adapters.Effect
 import adapters.dao.jdbc.AccountComponent
-import adapters.gateway.repositories.slick.common.{ AggregateSingleReadFeature, AggregateSingleWriteFeature }
+import adapters.gateway.repositories.slick.common.{
+  AggregateAllReadFeature,
+  AggregateSingleReadFeature,
+  AggregateSingleWriteFeature
+}
 import domain.account.{ Account, AccountId, AccountName, EncryptedPassword }
 import domain.common.Email
 import infrastructure.ulid.ULID
@@ -15,6 +19,7 @@ abstract class AbstractAccountRepositoryBySlick(val profile: JdbcProfile, val db
     extends AccountRepository[Effect]
     with AggregateSingleWriteFeature
     with AggregateSingleReadFeature
+    with AggregateAllReadFeature
     with AccountComponent {
 
   override type RecordType = AccountRecord

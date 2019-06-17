@@ -35,10 +35,6 @@ class ControllerSpec extends FreeSpec with RouteSpec {
         assert(responseJson.id.isDefined === true)
       }
 
-      Post("/accounts", HttpEntity(ContentTypes.`application/json`, data)) ~> controller.createAccount ~> check {
-        assert(response.status === StatusCodes.BadRequest)
-      }
-
     }
   }
 

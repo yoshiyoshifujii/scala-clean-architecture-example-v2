@@ -50,7 +50,8 @@ object Settings {
       ),
     addCompilerPlugin("org.typelevel" %% "kind-projector" % "0.10.0"),
     libraryDependencies ++= Seq(
-        ScalaTest.core % Test
+        ScalaTest.core % Test,
+        Logback.classic % Test
       ),
     dependencyOverrides ++= Seq(
         "org.slf4j"                  % "slf4j-api"               % "1.7.26",
