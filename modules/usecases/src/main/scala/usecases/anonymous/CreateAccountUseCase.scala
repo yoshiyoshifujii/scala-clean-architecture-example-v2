@@ -1,4 +1,4 @@
-package usecases.account
+package usecases.anonymous
 
 import cats.implicits._
 import domain.account._

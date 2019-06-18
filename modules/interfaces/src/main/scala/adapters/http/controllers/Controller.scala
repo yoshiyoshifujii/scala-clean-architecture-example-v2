@@ -8,7 +8,7 @@ import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.server.Route
 import de.heikoseeberger.akkahttpcirce.FailFastCirceSupport._
 import io.circe.generic.auto._
-import usecases.account.CreateAccountUseCase
+import usecases.anonymous.CreateAccountUseCase
 import wvlet.airframe._
 
 trait Controller {

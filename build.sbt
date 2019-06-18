@@ -35,7 +35,10 @@ lazy val `usecases` = (project in file("modules/usecases"))
     name := s"$baseName-usecases",
     libraryDependencies ++= Seq(
         Scalaz.zio     % Test,
-        Wvlet.airframe % Test
+        Wvlet.airframe % Test,
+        ScalaDDDBase.memory % Test,
+        Google.guava        % Test,
+        ScalaTestPlus.db    % Test
       )
   )
   .settings(coreSettings)
@@ -183,7 +186,7 @@ lazy val `interfaces` = (project in file("modules/interfaces"))
     Test / fork := true
   )
   .settings(coreSettings)
-  .dependsOn(`usecases`)
+  .dependsOn(`usecases` % "test->test;compile->compile")
 
 lazy val `applications-http` = (project in file("applications/http"))
   .settings(

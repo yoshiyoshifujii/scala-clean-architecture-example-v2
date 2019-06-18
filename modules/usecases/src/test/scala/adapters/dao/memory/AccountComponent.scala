@@ -1,5 +1,6 @@
 package adapters.dao.memory
 
+import cats.Monad
 import com.google.common.base.Ticker
 import com.google.common.cache.{ Cache, RemovalNotification }
 
@@ -19,7 +20,8 @@ trait AccountComponent extends GuavaMemoryDaoSupport {
     override def withStatus(value: String): AccountRecord = this
   }
 
-  case class AccountDao(cache: Cache[String, AccountRecord]) extends GuavaCacheDao[String, AccountRecord](cache) {
+  case class AccountDao[F[_]](cache: Cache[String, AccountRecord])(implicit M: Monad[F])
+      extends GuavaCacheDao[String, AccountRecord, F](cache) {
     def this(
         concurrencyLevel: Option[Int] = None,
         expireAfterAccess: Option[Duration] = None,
@@ -35,7 +37,7 @@ trait AccountComponent extends GuavaMemoryDaoSupport {
         weakKeys: Option[Boolean] = None,
         weakValues: Option[Boolean] = None,
         weigher: Option[(String, AccountRecord) => Int] = None
-    ) = {
+    )(implicit M: Monad[F]) = {
       this(
         GuavaCacheBuilder
           .build[String, AccountRecord](
@@ -54,7 +56,7 @@ trait AccountComponent extends GuavaMemoryDaoSupport {
             weakValues,
             weigher
           )
-      )
+      )(M)
     }
   }
 

@@ -1,4 +1,4 @@
-package adapters.gateway.repositories.memory.common
+package adapters.gateway.repositories.memory.zio.common
 
 import adapters.Effect
 import com.github.j5ik2o.dddbase.AggregateSingleWriter

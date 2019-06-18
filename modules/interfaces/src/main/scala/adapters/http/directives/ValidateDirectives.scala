@@ -7,7 +7,7 @@ import akka.http.scaladsl.server.Directive1
 import akka.http.scaladsl.server.Directives._
 import domain.account.{ AccountName, PlainPassword }
 import domain.common.Email
-import usecases.account.AccountCreateInput
+import usecases.anonymous.AccountCreateInput
 
 trait ValidateDirectives {
 

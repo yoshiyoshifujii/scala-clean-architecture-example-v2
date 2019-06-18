@@ -3,7 +3,7 @@ package adapters.http.controllers
 import java.nio.charset.StandardCharsets
 
 import adapters.dao.jdbc.RDB
-import adapters.gateway.repositories.memory.AccountRepositoryByMemory
+import adapters.gateway.repositories.memory.zio.AccountRepositoryByMemoryWithZIO
 import adapters.http.json.CreateAccountResponseJson
 import adapters.http.utils.RouteSpec
 import adapters.{ AppType, DISettings, Effect }
@@ -18,7 +18,7 @@ class ControllerSpec extends FreeSpec with RouteSpec {
 
   override def design: Design =
     super.design
-      .bind[AccountRepository[Effect]].to[AccountRepositoryByMemory]
+      .bind[AccountRepository[Effect]].to[AccountRepositoryByMemoryWithZIO]
       .add(DISettings.designOfServices)
 
   "Controller" - {

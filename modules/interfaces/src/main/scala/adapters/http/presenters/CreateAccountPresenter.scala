@@ -7,7 +7,7 @@ import akka.http.scaladsl.server.Route
 import de.heikoseeberger.akkahttpcirce.FailFastCirceSupport._
 import io.circe.generic.auto._
 import usecases.UseCaseApplicationError
-import usecases.account.AccountCreateOutput
+import usecases.anonymous.AccountCreateOutput
 
 trait CreateAccountPresenter extends Presenter[AccountCreateOutput] {
 
