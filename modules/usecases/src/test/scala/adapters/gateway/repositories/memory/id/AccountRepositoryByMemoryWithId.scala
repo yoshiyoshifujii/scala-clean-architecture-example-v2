@@ -3,6 +3,7 @@ package adapters.gateway.repositories.memory.id
 import adapters.dao.memory.AccountComponent
 import adapters.gateway.repositories.memory.id.common.{
   AggregateAllReadFeature,
+  AggregateSingleHardDeleteFeature,
   AggregateSingleReadFeature,
   AggregateSingleWriteFeature
 }
@@ -32,6 +33,7 @@ class AccountRepositoryByMemoryWithId(
     with AggregateSingleReadFeature
     with AggregateSingleWriteFeature
     with AggregateAllReadFeature
+    with AggregateSingleHardDeleteFeature
     with AccountComponent {
 
   override type RecordType = AccountRecord

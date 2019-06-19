@@ -1,9 +1,9 @@
 package adapters.gateway.repositories.memory.zio.common
 
 import adapters.Effect
-import com.github.j5ik2o.dddbase.AggregateSingleReader
+import com.github.j5ik2o.dddbase.{ AggregateNotFoundException, AggregateSingleReader }
 import scalaz.zio.ZIO
-import usecases.UseCaseApplicationError
+import usecases.UseCaseSystemError
 
 trait AggregateSingleReadFeature extends AggregateSingleReader[Effect] with AggregateBaseReadFeature {
 
@@ -11,7 +11,7 @@ trait AggregateSingleReadFeature extends AggregateSingleReader[Effect] with Aggr
     for {
       record <- dao.get(id.value.toString).flatMap {
         case Some(v) => ZIO.succeed(v)
-        case None    => ZIO.fail(UseCaseApplicationError(s"Not Found Error. $id"))
+        case None    => ZIO.fail(UseCaseSystemError(AggregateNotFoundException(id)))
       }
       aggregate <- convertToAggregate(record)
     } yield aggregate

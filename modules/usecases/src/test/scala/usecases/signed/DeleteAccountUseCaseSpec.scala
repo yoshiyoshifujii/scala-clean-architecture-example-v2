@@ -2,16 +2,17 @@ package usecases.signed
 
 import adapters.gateway.repositories.memory.id.AccountRepositoryByMemoryWithId
 import cats.Id
+import com.github.j5ik2o.dddbase.AggregateNotFoundException
 import domain.account.{ Account, AccountId, AccountName, EncryptedPassword }
 import domain.common.Email
 import org.scalatest.{ DiagrammedAssertions, FreeSpec }
 import repositories.AccountRepository
 
-class UpdateAccountUseCaseSpec extends FreeSpec with DiagrammedAssertions {
+class DeleteAccountUseCaseSpec extends FreeSpec with DiagrammedAssertions {
 
-  "UpdateAccountUseCase" - {
+  "DeleteAccountUseCase" - {
     val accountRepository: AccountRepository[Id] = new AccountRepositoryByMemoryWithId()
-    val useCase: UpdateAccountUseCase[Id]        = new UpdateAccountUseCase(accountRepository)
+    val useCase: DeleteAccountUseCase[Id]        = new DeleteAccountUseCase(accountRepository)
 
     val accountId   = AccountId()
     val email       = Email.generate("a@a.com")
@@ -22,10 +23,10 @@ class UpdateAccountUseCaseSpec extends FreeSpec with DiagrammedAssertions {
     "execute" in {
       assert(accountRepository.store(account) === 1L)
 
-      val newAccountName = AccountName.generate("fuga fugao")
-      val result         = useCase.execute(AccountUpdateInput(accountId, newAccountName))
+      val result = useCase.execute(AccountDeleteInput(accountId))
+
       assert(result.id === accountId)
-      assert(accountRepository.resolveById(accountId).name === newAccountName)
+      assertThrows[AggregateNotFoundException](accountRepository.resolveById(accountId))
     }
   }
 

@@ -4,6 +4,7 @@ import adapters.Effect
 import adapters.dao.jdbc.AccountComponent
 import adapters.gateway.repositories.slick.common.{
   AggregateAllReadFeature,
+  AggregateSingleHardDeleteFeature,
   AggregateSingleReadFeature,
   AggregateSingleWriteFeature
 }
@@ -20,6 +21,7 @@ abstract class AbstractAccountRepositoryBySlick(val profile: JdbcProfile, val db
     with AggregateSingleWriteFeature
     with AggregateSingleReadFeature
     with AggregateAllReadFeature
+    with AggregateSingleHardDeleteFeature
     with AccountComponent {
 
   override type RecordType = AccountRecord

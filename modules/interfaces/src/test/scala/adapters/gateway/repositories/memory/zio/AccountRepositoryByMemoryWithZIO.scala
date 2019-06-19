@@ -4,6 +4,7 @@ import adapters.Effect
 import adapters.dao.memory.AccountComponent
 import adapters.gateway.repositories.memory.zio.common.{
   AggregateAllReadFeature,
+  AggregateSingleHardDeleteFeature,
   AggregateSingleReadFeature,
   AggregateSingleWriteFeature
 }
@@ -33,6 +34,7 @@ class AccountRepositoryByMemoryWithZIO(
     with AggregateSingleReadFeature
     with AggregateSingleWriteFeature
     with AggregateAllReadFeature
+    with AggregateSingleHardDeleteFeature
     with AccountComponent {
 
   override type RecordType = AccountRecord

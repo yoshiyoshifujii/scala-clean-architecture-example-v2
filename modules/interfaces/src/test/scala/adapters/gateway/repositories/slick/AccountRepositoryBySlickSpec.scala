@@ -21,7 +21,7 @@ class AccountRepositoryBySlickSpec
       val Platform: Platform            = PlatformLive.Default
     }
 
-    "findBy is empty, store, findBy non empty." in {
+    "findBy is empty, store, findBy non empty, delete." in {
       val email = Email.generate("a@a.com")
 
       val repository = new AccountRepositoryBySlick(dbConfig.profile, dbConfig.db)
@@ -51,6 +51,15 @@ class AccountRepositoryBySlickSpec
       assert(result.get.email === email)
       assert(result.get.name === accountName)
       assert(result.get.password === password)
+
+      assert {
+        val a = runtime.unsafeRun(repository.hardDelete(accountId))
+        a === 1L
+      }
+      assert {
+        val a = runtime.unsafeRun(repository.hardDelete(accountId))
+        a === 0L
+      }
     }
 
     "already exists" in {
