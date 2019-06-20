@@ -12,7 +12,7 @@ object ScalaTestPlus {
 
 object Logback {
   val version = "1.2.3"
-  val classic = "ch.qos.logback"     % "logback-classic"       % version
+  val classic = "ch.qos.logback" % "logback-classic" % version
 }
 
 object Passay {
@@ -115,4 +115,9 @@ object T3hnar {
 object Google {
   val version = "27.1-jre"
   val guava   = "com.google.guava" % "guava" % version
+}
+
+object Sw4JJ {
+  val version = "1.0.2"
+  val sw4jj   = "com.github.j5ik2o" %% "sw4jj" % version
 }

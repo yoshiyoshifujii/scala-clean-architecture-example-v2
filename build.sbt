@@ -34,8 +34,8 @@ lazy val `usecases` = (project in file("modules/usecases"))
   .settings(
     name := s"$baseName-usecases",
     libraryDependencies ++= Seq(
-        Scalaz.zio     % Test,
-        Wvlet.airframe % Test,
+        Scalaz.zio          % Test,
+        Wvlet.airframe      % Test,
         ScalaDDDBase.memory % Test,
         Google.guava        % Test,
         ScalaTestPlus.db    % Test
@@ -128,7 +128,8 @@ lazy val `interfaces` = (project in file("modules/interfaces"))
         T3hnar.bCrypt,
         ScalaDDDBase.memory % Test,
         Google.guava        % Test,
-        ScalaTestPlus.db    % Test
+        ScalaTestPlus.db    % Test,
+        Sw4JJ.sw4jj
       ),
     // sbt-dao-generator
     // JDBCのドライバークラス名を指定します(必須)
@@ -171,7 +172,7 @@ lazy val `interfaces` = (project in file("modules/interfaces"))
       case className if className.endsWith("Spec") => "template_spec.ftl"
       case _                                       => "template.ftl"
     },
-    //compile in Compile := ((compile in Compile) dependsOn (generateAll in generator)).value,
+    compile in Compile := ((compile in Compile) dependsOn (generateAll in generator)).value,
     generateAll in generator := Def
         .taskDyn {
           val ga = (generateAll in generator).value
@@ -192,8 +193,8 @@ lazy val `applications-http` = (project in file("applications/http"))
   .settings(
     name := s"$baseName-applications-http",
     libraryDependencies ++= Seq(
-      Logback.classic
-    )
+        Logback.classic
+      )
   )
   .settings(coreSettings)
   .dependsOn(`interfaces`)
