@@ -20,6 +20,7 @@ class SignInUseCase[F[_]](
       maybe   <- accountRepository.findBy(inputData.email)
       account <- maybe.map(ME.pure).getOrElse(ME.raiseError(UseCaseApplicationError("missed.")))
       matched <- encryptService.matches(inputData.password.value.value, account.password.value)
-      token   <- if (matched) tokenService.generate else ME.raiseError[String](UseCaseApplicationError("missed."))
+      token <- if (matched) tokenService.generate(account.id)
+      else ME.raiseError[String](UseCaseApplicationError("missed."))
     } yield SignInOutput(token)
 }
