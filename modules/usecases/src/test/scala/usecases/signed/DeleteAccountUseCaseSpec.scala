@@ -3,7 +3,7 @@ package usecases.signed
 import adapters.gateway.repositories.memory.id.AccountRepositoryByMemoryWithId
 import cats.Id
 import com.github.j5ik2o.dddbase.AggregateNotFoundException
-import domain.account.{ Account, AccountId, AccountName, EncryptedPassword }
+import domain.account.{ Account, AccountId, AccountName, Auth, EncryptedPassword }
 import domain.common.Email
 import org.scalatest.{ DiagrammedAssertions, FreeSpec }
 import repositories.AccountRepository
@@ -23,7 +23,7 @@ class DeleteAccountUseCaseSpec extends FreeSpec with DiagrammedAssertions {
     "execute" in {
       assert(accountRepository.store(account) === 1L)
 
-      val result = useCase.execute(AccountDeleteInput(accountId))
+      val result = useCase.execute(AccountDeleteInput(Auth(accountId), accountId))
 
       assert(result.id === accountId)
       assertThrows[AggregateNotFoundException](accountRepository.resolveById(accountId))

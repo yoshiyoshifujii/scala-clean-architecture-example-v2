@@ -3,7 +3,7 @@ package adapters.gateway.services
 import adapters.dao.jdbc.RDB
 import adapters.{ AppType, Effect }
 import com.auth0.jwt.algorithms.Algorithm
-import domain.account.AccountId
+import domain.account.{ AccountId, Auth }
 import org.scalatest.{ DiagrammedAssertions, FreeSpec }
 import scalaz.zio.internal.{ Platform, PlatformLive }
 import services.TokenService
@@ -38,7 +38,7 @@ class TokenServiceByJwtSpec extends FreeSpec with DiagrammedAssertions {
         val tokenService = session.build[TokenService[Effect]]
         val verifiedAccountId = runtime.unsafeRun {
           for {
-            jwt <- tokenService.generate(accountId)
+            jwt <- tokenService.generate(Auth(accountId))
             aid <- tokenService.verify(jwt, 0)
           } yield aid
         }

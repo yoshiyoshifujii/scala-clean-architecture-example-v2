@@ -1,11 +1,11 @@
 package usecases.signed
 
-import domain.account.{ Account, AccountId, AccountName, ResolvedAccount }
+import domain.account.{ Account, AccountId, AccountName, Auth, ResolvedAccount }
 import repositories.AccountRepository
 import usecases.{ UseCase, UseCaseMonadError }
 import cats.implicits._
 
-case class AccountUpdateInput(accountId: AccountId, name: AccountName)
+case class AccountUpdateInput(auth: Auth, accountId: AccountId, name: AccountName)
 case class AccountUpdateOutput(id: AccountId)
 
 class UpdateAccountUseCase[F[_]](

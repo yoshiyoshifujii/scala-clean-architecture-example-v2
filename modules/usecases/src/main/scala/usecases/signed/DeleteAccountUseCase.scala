@@ -1,11 +1,11 @@
 package usecases.signed
 
 import cats.implicits._
-import domain.account.AccountId
+import domain.account.{ AccountId, Auth }
 import repositories.AccountRepository
 import usecases.{ UseCase, UseCaseMonadError }
 
-case class AccountDeleteInput(accountId: AccountId)
+case class AccountDeleteInput(auth: Auth, accountId: AccountId)
 case class AccountDeleteOutput(id: AccountId)
 
 class DeleteAccountUseCase[F[_]](

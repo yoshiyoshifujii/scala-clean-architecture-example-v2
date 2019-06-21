@@ -1,7 +1,7 @@
 package usecases.anonymous
 
 import cats.implicits._
-import domain.account.PlainPassword
+import domain.account.{ Auth, PlainPassword }
 import domain.common.Email
 import repositories.AccountRepository
 import services.{ EncryptService, TokenService }
@@ -21,8 +21,9 @@ class SignInUseCase[F[_]](
       maybe   <- accountRepository.findBy(inputData.email)
       account <- maybe.map(ME.pure).getOrElse(ME.raiseError(UseCaseApplicationError("missed.")))
       matched <- encryptService.matches(inputData.password.value.value, account.password.value)
-      token <- if (matched) tokenService.generate(account.id)
-      else ME.raiseError[String](UseCaseApplicationError("missed."))
+      token <- if (matched) {
+        tokenService.generate(Auth(account.id))
+      } else ME.raiseError[String](UseCaseApplicationError("missed."))
     } yield SignInOutput(token)
 
 }

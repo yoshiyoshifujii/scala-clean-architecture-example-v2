@@ -25,7 +25,7 @@ class SignInUseCaseSpec extends FreeSpec with DiagrammedAssertions {
       override def matches(value0: String, value1: String): Id[Boolean] = encrypt(value0) == value1
     }
     val tokenService: TokenService[Id] = new TokenService[Id] {
-      override def generate(accountId: AccountId): Id[String]                  = "token"
+      override def generate(auth: Auth): Id[String]                            = "token"
       override def verify(token: String, acceptExpiresAt: Long): Id[AccountId] = ???
     }
 

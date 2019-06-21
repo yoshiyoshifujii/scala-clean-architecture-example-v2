@@ -6,7 +6,7 @@ import java.util.{ Date, UUID }
 import adapters.{ AppType, Effect }
 import com.auth0.jwt.JWT
 import com.auth0.jwt.algorithms.Algorithm
-import domain.account.AccountId
+import domain.account.{ AccountId, Auth }
 import infrastructure.ulid.ULID
 import scalaz.zio.ZIO
 import services.TokenService
@@ -24,7 +24,7 @@ trait TokenServiceByJwt extends TokenService[Effect] {
   private val algorithm: Algorithm = bind[Algorithm]
   private val config: JwtConfig    = bind[JwtConfig]
 
-  override def generate(accountId: AccountId): Effect[String] =
+  override def generate(auth: Auth): Effect[String] =
     ZIO
       .fromTry {
         Try {
@@ -39,11 +39,11 @@ trait TokenServiceByJwt extends TokenService[Effect] {
             .withHeader(Map[String, AnyRef]("typ" -> "JWT", "cty" -> "JWT").asJava)
             .withIssuer(config.issuer)
             .withAudience(config.audience)
-            .withSubject(accountId.value)
+            .withSubject(auth.accountId.value)
             .withJWTId(jti)
             .withIssuedAt(nowDate)
             .withExpiresAt(expiresDate)
-            .withClaim("account_id", accountId.value)
+            .withClaim("account_id", auth.accountId.value)
             .sign(algorithm)
         }
       }.foldM[AppType, UseCaseError, String](
