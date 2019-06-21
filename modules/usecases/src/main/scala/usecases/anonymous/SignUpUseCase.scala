@@ -7,19 +7,19 @@ import repositories.AccountRepository
 import services.EncryptService
 import usecases.{ UseCase, UseCaseMonadError }
 
-case class AccountCreateInput(email: Email, password: PlainPassword, name: AccountName)
-case class AccountCreateOutput(id: AccountId)
+case class SignUpInput(email: Email, password: PlainPassword, name: AccountName)
+case class SignUpOutput(id: AccountId)
 
-class CreateAccountUseCase[F[_]](
+class SignUpUseCase[F[_]](
     accountRepository: AccountRepository[F],
     encryptService: EncryptService[F]
-) extends UseCase[F, AccountCreateInput, AccountCreateOutput] {
+) extends UseCase[F, SignUpInput, SignUpOutput] {
 
-  override def execute(inputData: AccountCreateInput)(implicit ME: UseCaseMonadError[F]): F[AccountCreateOutput] =
+  override def execute(inputData: SignUpInput)(implicit ME: UseCaseMonadError[F]): F[SignUpOutput] =
     for {
       encrypted <- encryptService.encrypt(inputData.password.value.value)
       generated = Account.generate(AccountId(), inputData.email, inputData.name, EncryptedPassword(encrypted))
       _ <- accountRepository.store(generated)
-    } yield AccountCreateOutput(generated.id)
+    } yield SignUpOutput(generated.id)
 
 }

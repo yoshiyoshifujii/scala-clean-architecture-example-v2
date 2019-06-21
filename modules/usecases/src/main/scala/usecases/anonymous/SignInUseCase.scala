@@ -15,6 +15,7 @@ class SignInUseCase[F[_]](
     encryptService: EncryptService[F],
     tokenService: TokenService[F]
 ) extends UseCase[F, SignInInput, SignInOutput] {
+
   override def execute(inputData: SignInInput)(implicit ME: UseCaseMonadError[F]): F[SignInOutput] =
     for {
       maybe   <- accountRepository.findBy(inputData.email)
@@ -23,4 +24,5 @@ class SignInUseCase[F[_]](
       token <- if (matched) tokenService.generate(account.id)
       else ME.raiseError[String](UseCaseApplicationError("missed."))
     } yield SignInOutput(token)
+
 }

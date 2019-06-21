@@ -8,9 +8,9 @@ import org.scalatest.{ DiagrammedAssertions, FreeSpec }
 import repositories.AccountRepository
 import services.EncryptService
 
-class CreateAccountUseCaseSpec extends FreeSpec with DiagrammedAssertions {
+class SignUpUseCaseSpec extends FreeSpec with DiagrammedAssertions {
 
-  "CreateAccountUseCase" - {
+  "SignUpUseCase" - {
     val email1         = Email.generate("a@a.com")
     val accountName1   = AccountName.generate("hoge hogeo")
     val plainPassword1 = PlainPassword.generate("hogeHoge123")
@@ -20,14 +20,14 @@ class CreateAccountUseCaseSpec extends FreeSpec with DiagrammedAssertions {
       override def encrypt(value: String): Id[String]                   = "xxx"
       override def matches(value0: String, value1: String): Id[Boolean] = ???
     }
-    val useCase: CreateAccountUseCase[Id] = new CreateAccountUseCase[Id](
+    val useCase: SignUpUseCase[Id] = new SignUpUseCase[Id](
       accountRepository,
       encryptService
     )
     import usecases.SampleInterfacesLayer.SampleErrors._
 
     "success - new" in {
-      val result = useCase.execute(AccountCreateInput(email = email1, password = plainPassword1, name = accountName1))
+      val result = useCase.execute(SignUpInput(email = email1, password = plainPassword1, name = accountName1))
       assert {
         result.id.breachEncapsulationOfValue.asString.nonEmpty
       }

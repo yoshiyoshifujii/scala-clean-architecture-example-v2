@@ -7,11 +7,11 @@ import akka.http.scaladsl.server.Route
 import de.heikoseeberger.akkahttpcirce.FailFastCirceSupport._
 import io.circe.generic.auto._
 import usecases.UseCaseApplicationError
-import usecases.anonymous.AccountCreateOutput
+import usecases.anonymous.SignUpOutput
 
-trait CreateAccountPresenter extends Presenter[AccountCreateOutput] {
+trait CreateAccountPresenter extends Presenter[SignUpOutput] {
 
-  override protected def convert(outputData: AccountCreateOutput): Route =
+  override protected def convert(outputData: SignUpOutput): Route =
     complete(CreateAccountResponseJson(Some(outputData.id.value)))
 
   override protected def convert(useCaseApplicationError: UseCaseApplicationError): Route =
