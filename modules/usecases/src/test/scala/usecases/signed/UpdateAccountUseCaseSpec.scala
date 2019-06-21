@@ -26,6 +26,8 @@ class UpdateAccountUseCaseSpec extends FreeSpec with DiagrammedAssertions {
       val result         = useCase.execute(AccountUpdateInput(accountId, newAccountName))
       assert(result.id === accountId)
       assert(accountRepository.resolveById(accountId).name === newAccountName)
+
+      assertThrows[Exception](useCase.execute(AccountUpdateInput(AccountId(), newAccountName)))
     }
   }
 
