@@ -29,7 +29,7 @@ class ControllerSpec extends FreeSpec with RouteSpec {
       val data: Array[Byte] =
         """{"email":"a@a.com","name":"hoge hogeo","password":"hogeHOGE1"}""".getBytes(StandardCharsets.UTF_8)
 
-      Post("/accounts", HttpEntity(ContentTypes.`application/json`, data)) ~> controller.signUp ~> check {
+      Post("/signup", HttpEntity(ContentTypes.`application/json`, data)) ~> controller.signUp ~> check {
         assert(response.status === StatusCodes.OK)
         val responseJson = responseAs[SignUpResponseJson]
         assert(responseJson.id.isDefined === true)

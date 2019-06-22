@@ -24,7 +24,7 @@ trait Controller {
     signUp
 
   private[controllers] def signUp: Route =
-    path("accounts") {
+    path("signup") {
       post {
         entity(as[SignUpRequestJson]) { json =>
           validateJsonRequest(json).apply { inputData =>
