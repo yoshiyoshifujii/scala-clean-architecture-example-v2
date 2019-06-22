@@ -41,7 +41,7 @@ class ControllerSpec extends FreeSpec with RouteSpec with DiagrammedAssertions {
 
       val signUpData: Array[Byte] =
         """{"email":"a@a.com","name":"hoge hogeo","password":"hogeHOGE1"}""".getBytes(StandardCharsets.UTF_8)
-      val accountId = Post("/signup", HttpEntity(ContentTypes.`application/json`, signUpData)) ~> controller.signUp ~> check {
+      val accountId = Post("/signup", HttpEntity(ContentTypes.`application/json`, signUpData)) ~> controller.toRoutes ~> check {
           assert(response.status === StatusCodes.OK)
           val responseJson = responseAs[SignUpResponseJson]
           assert(responseJson.id.isDefined === true)
@@ -50,7 +50,7 @@ class ControllerSpec extends FreeSpec with RouteSpec with DiagrammedAssertions {
 
       val signInData: Array[Byte] =
         """{"email":"a@a.com","password":"hogeHOGE1"}""".getBytes(StandardCharsets.UTF_8)
-      Post("/signin", HttpEntity(ContentTypes.`application/json`, signInData)) ~> controller.signIn ~> check {
+      Post("/signin", HttpEntity(ContentTypes.`application/json`, signInData)) ~> controller.toRoutes ~> check {
         assert(response.status === StatusCodes.OK)
         val responseJson = responseAs[SignInResponseJson]
 
@@ -60,10 +60,14 @@ class ControllerSpec extends FreeSpec with RouteSpec with DiagrammedAssertions {
         val updateAccountData =
           """{"name":"fuga fugao"}""".getBytes(StandardCharsets.UTF_8)
         Post(s"/accounts/$accountId", HttpEntity(ContentTypes.`application/json`, updateAccountData))
-          .addCredentials(OAuth2BearerToken(maybeToken.get)) ~> controller.updateAccount ~> check {
+          .addCredentials(OAuth2BearerToken(maybeToken.get)) ~> controller.toRoutes ~> check {
           assert(response.status === StatusCodes.OK)
         }
 
+        Delete(s"/accounts/$accountId")
+          .addCredentials(OAuth2BearerToken(maybeToken.get)) ~> controller.toRoutes ~> check {
+          assert(response.status === StatusCodes.OK)
+        }
       }
 
     }

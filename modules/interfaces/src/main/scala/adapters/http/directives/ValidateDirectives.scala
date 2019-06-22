@@ -1,6 +1,11 @@
 package adapters.http.directives
 
-import adapters.http.json.{ AccountUpdateRequestJsonWithId, SignInRequestJson, SignUpRequestJson }
+import adapters.http.json.{
+  AccountDeleteRequestWithAuth,
+  AccountUpdateRequestJsonWithAuth,
+  SignInRequestJson,
+  SignUpRequestJson
+}
 import adapters.http.rejections.ValidationRejections
 import adapters.validator.{ ValidationResult, Validator }
 import akka.http.scaladsl.server.Directive1
@@ -8,7 +13,7 @@ import akka.http.scaladsl.server.Directives._
 import domain.account.{ AccountId, AccountName, PlainPassword }
 import domain.common.Email
 import usecases.anonymous.{ SignInInput, SignUpInput }
-import usecases.signed.AccountUpdateInput
+import usecases.signed.{ AccountDeleteInput, AccountUpdateInput }
 
 trait ValidateDirectives {
 
@@ -46,9 +51,9 @@ object ValidateDirectives extends ValidateDirectives {
       }
   }
 
-  implicit object AccountUpdateRequestJsonWithIdValidator
-      extends Validator[AccountUpdateRequestJsonWithId, AccountUpdateInput] {
-    override def validate(value: AccountUpdateRequestJsonWithId): ValidationResult[AccountUpdateInput] =
+  implicit object AccountUpdateRequestJsonWithAuthValidator
+      extends Validator[AccountUpdateRequestJsonWithAuth, AccountUpdateInput] {
+    override def validate(value: AccountUpdateRequestJsonWithAuth): ValidationResult[AccountUpdateInput] =
       (
         AccountName.validate(value.request.name),
         AccountId.validate(value.accountId)
@@ -56,6 +61,15 @@ object ValidateDirectives extends ValidateDirectives {
         case (name, accountId) =>
           AccountUpdateInput(value.auth, accountId, name)
       }
+  }
+
+  implicit object AccountDeleteRequestWithAuthValidator
+      extends Validator[AccountDeleteRequestWithAuth, AccountDeleteInput] {
+    override def validate(value: AccountDeleteRequestWithAuth): ValidationResult[AccountDeleteInput] =
+      AccountId.validate(value.accountId).map { accountId =>
+        AccountDeleteInput(value.auth, accountId)
+      }
+
   }
 
 }
