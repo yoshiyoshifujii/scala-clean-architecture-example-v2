@@ -2,7 +2,7 @@ package adapters.http.controllers
 
 import adapters.http.directives.{ AuthDirectives, ValidateDirectives }
 import adapters.http.json._
-import adapters.http.presenters.{ DeleteAccountPresenter, SignInPresenter, SignUpPresenter, UpdateAccountPresenter }
+import adapters.http.presenters.{ AccountDeletePresenter, AccountUpdatePresenter, SignInPresenter, SignUpPresenter }
 import adapters.{ AppType, Effect }
 import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.server.Route
@@ -10,7 +10,7 @@ import de.heikoseeberger.akkahttpcirce.FailFastCirceSupport._
 import io.circe.generic.auto._
 import services.TokenService
 import usecases.anonymous.{ SignInUseCase, SignUpUseCase }
-import usecases.signed.{ DeleteAccountUseCase, UpdateAccountUseCase }
+import usecases.signed.{ AccountDeleteUseCase, AccountUpdateUseCase }
 import wvlet.airframe._
 
 trait Controller {
@@ -26,14 +26,14 @@ trait Controller {
   private val signInUseCase   = bind[SignInUseCase[Effect]]
   private val signInPresenter = bind[SignInPresenter]
 
-  private val updateAccountUseCase   = bind[UpdateAccountUseCase[Effect]]
-  private val updateAccountPresenter = bind[UpdateAccountPresenter]
+  private val accountUpdateUseCase   = bind[AccountUpdateUseCase[Effect]]
+  private val accountUpdatePresenter = bind[AccountUpdatePresenter]
 
-  private val deleteAccountUseCase   = bind[DeleteAccountUseCase[Effect]]
-  private val deleteAccountPresenter = bind[DeleteAccountPresenter]
+  private val accountDeleteUseCase   = bind[AccountDeleteUseCase[Effect]]
+  private val accountDeletePresenter = bind[AccountDeletePresenter]
 
   def toRoutes: Route =
-    signUp ~ signIn ~ updateAccount ~ deleteAccount
+    signUp ~ signIn ~ accountUpdate ~ accountDelete
 
   private def signUp: Route =
     path("signup") {
@@ -57,25 +57,25 @@ trait Controller {
       }
     }
 
-  private def updateAccount: Route =
+  private def accountUpdate: Route =
     path("accounts" / Segment) { accountId =>
       post {
         AuthDirectives.validateAuth.apply { auth =>
           entity(as[AccountUpdateRequestJson]) { json =>
             validateJsonRequest(AccountUpdateRequestJsonWithAuth(auth, json, accountId)).apply { inputData =>
-              updateAccountPresenter.response(updateAccountUseCase.execute(inputData))
+              accountUpdatePresenter.response(accountUpdateUseCase.execute(inputData))
             }
           }
         }
       }
     }
 
-  private def deleteAccount: Route =
+  private def accountDelete: Route =
     path("accounts" / Segment) { accountId =>
       delete {
         AuthDirectives.validateAuth.apply { auth =>
           validateJsonRequest(AccountDeleteRequestWithAuth(auth, accountId)).apply { inputData =>
-            deleteAccountPresenter.response(deleteAccountUseCase.execute(inputData))
+            accountDeletePresenter.response(accountDeleteUseCase.execute(inputData))
           }
         }
       }

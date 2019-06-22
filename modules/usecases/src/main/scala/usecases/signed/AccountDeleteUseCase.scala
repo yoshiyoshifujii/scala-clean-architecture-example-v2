@@ -8,7 +8,7 @@ import usecases.{ UseCase, UseCaseMonadError }
 case class AccountDeleteInput(auth: Auth, accountId: AccountId)
 case class AccountDeleteOutput(id: AccountId)
 
-class DeleteAccountUseCase[F[_]](
+class AccountDeleteUseCase[F[_]](
     accountRepository: AccountRepository[F]
 ) extends UseCase[F, AccountDeleteInput, AccountDeleteOutput] {
 

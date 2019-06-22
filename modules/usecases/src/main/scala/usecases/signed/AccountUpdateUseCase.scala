@@ -8,7 +8,7 @@ import cats.implicits._
 case class AccountUpdateInput(auth: Auth, accountId: AccountId, name: AccountName)
 case class AccountUpdateOutput(id: AccountId)
 
-class UpdateAccountUseCase[F[_]](
+class AccountUpdateUseCase[F[_]](
     accountRepository: AccountRepository[F]
 ) extends UseCase[F, AccountUpdateInput, AccountUpdateOutput] {
 

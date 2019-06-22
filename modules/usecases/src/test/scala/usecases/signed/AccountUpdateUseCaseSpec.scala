@@ -7,11 +7,11 @@ import domain.common.Email
 import org.scalatest.{ DiagrammedAssertions, FreeSpec }
 import repositories.AccountRepository
 
-class UpdateAccountUseCaseSpec extends FreeSpec with DiagrammedAssertions {
+class AccountUpdateUseCaseSpec extends FreeSpec with DiagrammedAssertions {
 
-  "UpdateAccountUseCase" - {
+  "AccountUpdateUseCase" - {
     val accountRepository: AccountRepository[Id] = new AccountRepositoryByMemoryWithId()
-    val useCase: UpdateAccountUseCase[Id]        = new UpdateAccountUseCase(accountRepository)
+    val useCase: AccountUpdateUseCase[Id]        = new AccountUpdateUseCase(accountRepository)
 
     val accountId   = AccountId()
     val email       = Email.generate("a@a.com")

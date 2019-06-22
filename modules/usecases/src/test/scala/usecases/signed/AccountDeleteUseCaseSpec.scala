@@ -8,11 +8,11 @@ import domain.common.Email
 import org.scalatest.{ DiagrammedAssertions, FreeSpec }
 import repositories.AccountRepository
 
-class DeleteAccountUseCaseSpec extends FreeSpec with DiagrammedAssertions {
+class AccountDeleteUseCaseSpec extends FreeSpec with DiagrammedAssertions {
 
-  "DeleteAccountUseCase" - {
+  "AccountDeleteUseCase" - {
     val accountRepository: AccountRepository[Id] = new AccountRepositoryByMemoryWithId()
-    val useCase: DeleteAccountUseCase[Id]        = new DeleteAccountUseCase(accountRepository)
+    val useCase: AccountDeleteUseCase[Id]        = new AccountDeleteUseCase(accountRepository)
 
     val accountId   = AccountId()
     val email       = Email.generate("a@a.com")

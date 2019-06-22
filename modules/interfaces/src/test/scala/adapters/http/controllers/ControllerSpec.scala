@@ -57,9 +57,9 @@ class ControllerSpec extends FreeSpec with RouteSpec with DiagrammedAssertions {
         val maybeToken = responseJson.token
         assert(maybeToken.isDefined === true)
 
-        val updateAccountData =
+        val accountUpdateData =
           """{"name":"fuga fugao"}""".getBytes(StandardCharsets.UTF_8)
-        Post(s"/accounts/$accountId", HttpEntity(ContentTypes.`application/json`, updateAccountData))
+        Post(s"/accounts/$accountId", HttpEntity(ContentTypes.`application/json`, accountUpdateData))
           .addCredentials(OAuth2BearerToken(maybeToken.get)) ~> controller.toRoutes ~> check {
           assert(response.status === StatusCodes.OK)
         }
