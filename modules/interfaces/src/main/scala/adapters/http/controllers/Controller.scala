@@ -1,8 +1,8 @@
 package adapters.http.controllers
 
 import adapters.http.directives.ValidateDirectives
-import adapters.http.json.CreateAccountRequestJson
-import adapters.http.presenters.CreateAccountPresenter
+import adapters.http.json.SignUpRequestJson
+import adapters.http.presenters.SignUpPresenter
 import adapters.{ AppType, Effect }
 import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.server.Route
@@ -17,18 +17,18 @@ trait Controller {
 
   private implicit val runtime: scalaz.zio.Runtime[AppType] = bind[scalaz.zio.Runtime[AppType]]
 
-  private val createAccountUseCase   = bind[SignUpUseCase[Effect]]
-  private val createAccountPresenter = bind[CreateAccountPresenter]
+  private val signUpUseCase   = bind[SignUpUseCase[Effect]]
+  private val signUpPresenter = bind[SignUpPresenter]
 
   def toRoutes: Route =
-    createAccount
+    signUp
 
-  private[controllers] def createAccount: Route =
+  private[controllers] def signUp: Route =
     path("accounts") {
       post {
-        entity(as[CreateAccountRequestJson]) { json =>
+        entity(as[SignUpRequestJson]) { json =>
           validateJsonRequest(json).apply { inputData =>
-            createAccountPresenter.response(createAccountUseCase.execute(inputData))
+            signUpPresenter.response(signUpUseCase.execute(inputData))
           }
         }
       }

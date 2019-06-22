@@ -1,6 +1,6 @@
 package adapters.http.directives
 
-import adapters.http.json.CreateAccountRequestJson
+import adapters.http.json.SignUpRequestJson
 import adapters.http.rejections.ValidationRejections
 import adapters.validator.{ ValidationResult, Validator }
 import akka.http.scaladsl.server.Directive1
@@ -22,8 +22,8 @@ trait ValidateDirectives {
 object ValidateDirectives extends ValidateDirectives {
   import cats.implicits._
 
-  implicit object CreateAccountRequestJsonValidator extends Validator[CreateAccountRequestJson, SignUpInput] {
-    override def validate(value: CreateAccountRequestJson): ValidationResult[SignUpInput] =
+  implicit object SignUpRequestJsonValidator extends Validator[SignUpRequestJson, SignUpInput] {
+    override def validate(value: SignUpRequestJson): ValidationResult[SignUpInput] =
       (
         Email.validate(value.email),
         PlainPassword.validate(value.password),

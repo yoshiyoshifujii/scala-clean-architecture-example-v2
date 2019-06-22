@@ -3,7 +3,7 @@ package adapters
 import adapters.gateway.repositories.slick.AccountRepositoryBySlick
 import adapters.gateway.services.EncryptServiceByBCrypt
 import adapters.http.controllers.Controller
-import adapters.http.presenters.CreateAccountPresenter
+import adapters.http.presenters.SignUpPresenter
 import repositories.AccountRepository
 import scalaz.zio.internal.{ Platform, PlatformLive }
 import services.EncryptService
@@ -36,7 +36,7 @@ trait DISettings {
 
   private[adapters] def designOfHttpPresenters: Design =
     newDesign
-      .bind[CreateAccountPresenter].toEagerSingleton
+      .bind[SignUpPresenter].toEagerSingleton
 
   private[adapters] def designOfHttpControllers: Design =
     newDesign

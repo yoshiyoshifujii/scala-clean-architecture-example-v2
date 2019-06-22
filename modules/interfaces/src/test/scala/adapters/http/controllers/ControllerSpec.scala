@@ -4,7 +4,7 @@ import java.nio.charset.StandardCharsets
 
 import adapters.dao.jdbc.RDB
 import adapters.gateway.repositories.memory.zio.AccountRepositoryByMemoryWithZIO
-import adapters.http.json.CreateAccountResponseJson
+import adapters.http.json.SignUpResponseJson
 import adapters.http.utils.RouteSpec
 import adapters.{ AppType, DISettings, Effect }
 import akka.http.scaladsl.model.{ ContentTypes, HttpEntity, StatusCodes }
@@ -22,16 +22,16 @@ class ControllerSpec extends FreeSpec with RouteSpec {
       .add(DISettings.designOfServices)
 
   "Controller" - {
-    "createAccount" in {
+    "sign up" in {
       import io.circe.generic.auto._
       val controller = session.build[Controller]
 
       val data: Array[Byte] =
         """{"email":"a@a.com","name":"hoge hogeo","password":"hogeHOGE1"}""".getBytes(StandardCharsets.UTF_8)
 
-      Post("/accounts", HttpEntity(ContentTypes.`application/json`, data)) ~> controller.createAccount ~> check {
+      Post("/accounts", HttpEntity(ContentTypes.`application/json`, data)) ~> controller.signUp ~> check {
         assert(response.status === StatusCodes.OK)
-        val responseJson = responseAs[CreateAccountResponseJson]
+        val responseJson = responseAs[SignUpResponseJson]
         assert(responseJson.id.isDefined === true)
       }
 

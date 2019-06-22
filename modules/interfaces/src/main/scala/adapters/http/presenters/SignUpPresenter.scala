@@ -1,6 +1,6 @@
 package adapters.http.presenters
 
-import adapters.http.json.CreateAccountResponseJson
+import adapters.http.json.SignUpResponseJson
 import akka.http.scaladsl.model.{ ContentTypes, HttpEntity, HttpResponse, StatusCodes }
 import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.server.Route
@@ -9,10 +9,10 @@ import io.circe.generic.auto._
 import usecases.UseCaseApplicationError
 import usecases.anonymous.SignUpOutput
 
-trait CreateAccountPresenter extends Presenter[SignUpOutput] {
+trait SignUpPresenter extends Presenter[SignUpOutput] {
 
   override protected def convert(outputData: SignUpOutput): Route =
-    complete(CreateAccountResponseJson(Some(outputData.id.value)))
+    complete(SignUpResponseJson(Some(outputData.id.value)))
 
   override protected def convert(useCaseApplicationError: UseCaseApplicationError): Route =
     complete(
