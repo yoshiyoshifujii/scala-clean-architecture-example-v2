@@ -5,7 +5,7 @@ import java.nio.charset.StandardCharsets
 import adapters.dao.jdbc.RDB
 import adapters.gateway.repositories.memory.zio.AccountRepositoryByMemoryWithZIO
 import adapters.gateway.services.JwtConfig
-import adapters.http.json.{ SignInResponseJson, SignUpResponseJson }
+import adapters.http.json.{ AccountGetsResponseJson, SignInResponseJson, SignUpResponseJson }
 import adapters.http.utils.RouteSpec
 import adapters.{ AppType, DISettings, Effect }
 import akka.http.scaladsl.model.headers.OAuth2BearerToken
@@ -56,6 +56,16 @@ class ControllerSpec extends FreeSpec with RouteSpec with DiagrammedAssertions {
 
         val maybeToken = responseJson.token
         assert(maybeToken.isDefined === true)
+
+        Get("/accounts")
+          .addCredentials(OAuth2BearerToken(maybeToken.get)) ~> controller.toRoutes ~> check {
+          assert(response.status === StatusCodes.OK)
+          val responseJson = responseAs[AccountGetsResponseJson]
+
+          assert(responseJson.accounts.nonEmpty)
+          assert(responseJson.accounts.head.id === accountId)
+          assert(responseJson.accounts.head.name === "hoge hogeo")
+        }
 
         val accountUpdateData =
           """{"name":"fuga fugao"}""".getBytes(StandardCharsets.UTF_8)

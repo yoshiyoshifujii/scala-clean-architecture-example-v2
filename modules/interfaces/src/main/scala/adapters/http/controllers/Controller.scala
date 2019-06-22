@@ -2,7 +2,7 @@ package adapters.http.controllers
 
 import adapters.http.directives.{ AuthDirectives, ValidateDirectives }
 import adapters.http.json._
-import adapters.http.presenters.{ AccountDeletePresenter, AccountUpdatePresenter, SignInPresenter, SignUpPresenter }
+import adapters.http.presenters._
 import adapters.{ AppType, Effect }
 import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.server.Route
@@ -10,7 +10,7 @@ import de.heikoseeberger.akkahttpcirce.FailFastCirceSupport._
 import io.circe.generic.auto._
 import services.TokenService
 import usecases.anonymous.{ SignInUseCase, SignUpUseCase }
-import usecases.signed.{ AccountDeleteUseCase, AccountUpdateUseCase }
+import usecases.signed.{ AccountDeleteUseCase, AccountGetsInput, AccountGetsUseCase, AccountUpdateUseCase }
 import wvlet.airframe._
 
 trait Controller {
@@ -26,6 +26,9 @@ trait Controller {
   private val signInUseCase   = bind[SignInUseCase[Effect]]
   private val signInPresenter = bind[SignInPresenter]
 
+  private val accountGetsUseCase   = bind[AccountGetsUseCase[Effect]]
+  private val accountGetsPresenter = bind[AccountGetsPresenter]
+
   private val accountUpdateUseCase   = bind[AccountUpdateUseCase[Effect]]
   private val accountUpdatePresenter = bind[AccountUpdatePresenter]
 
@@ -33,7 +36,7 @@ trait Controller {
   private val accountDeletePresenter = bind[AccountDeletePresenter]
 
   def toRoutes: Route =
-    signUp ~ signIn ~ accountUpdate ~ accountDelete
+    signUp ~ signIn ~ accountGets ~ accountUpdate ~ accountDelete
 
   private def signUp: Route =
     path("signup") {
@@ -53,6 +56,16 @@ trait Controller {
           validateJsonRequest(json).apply { inputData =>
             signInPresenter.response(signInUseCase.execute(inputData))
           }
+        }
+      }
+    }
+
+  private def accountGets: Route =
+    path("accounts") {
+      get {
+        AuthDirectives.validateAuth.apply { auth =>
+          val inputData = AccountGetsInput(auth)
+          accountGetsPresenter.response(accountGetsUseCase.execute(inputData))
         }
       }
     }
@@ -80,4 +93,5 @@ trait Controller {
         }
       }
     }
+
 }
