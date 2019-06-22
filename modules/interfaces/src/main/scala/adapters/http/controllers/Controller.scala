@@ -10,7 +10,7 @@ import de.heikoseeberger.akkahttpcirce.FailFastCirceSupport._
 import io.circe.generic.auto._
 import services.TokenService
 import usecases.anonymous.{ SignInUseCase, SignUpUseCase }
-import usecases.signed.{ AccountDeleteUseCase, AccountGetsInput, AccountGetsUseCase, AccountUpdateUseCase }
+import usecases.signed._
 import wvlet.airframe._
 
 trait Controller {
@@ -29,6 +29,9 @@ trait Controller {
   private val accountGetsUseCase   = bind[AccountGetsUseCase[Effect]]
   private val accountGetsPresenter = bind[AccountGetsPresenter]
 
+  private val accountGetUseCase   = bind[AccountGetUseCase[Effect]]
+  private val accountGetPresenter = bind[AccountGetPresenter]
+
   private val accountUpdateUseCase   = bind[AccountUpdateUseCase[Effect]]
   private val accountUpdatePresenter = bind[AccountUpdatePresenter]
 
@@ -36,7 +39,7 @@ trait Controller {
   private val accountDeletePresenter = bind[AccountDeletePresenter]
 
   def toRoutes: Route =
-    signUp ~ signIn ~ accountGets ~ accountUpdate ~ accountDelete
+    signUp ~ signIn ~ accountGets ~ accountGet ~ accountUpdate ~ accountDelete
 
   private def signUp: Route =
     path("signup") {
@@ -66,6 +69,17 @@ trait Controller {
         AuthDirectives.validateAuth.apply { auth =>
           val inputData = AccountGetsInput(auth)
           accountGetsPresenter.response(accountGetsUseCase.execute(inputData))
+        }
+      }
+    }
+
+  private def accountGet: Route =
+    path("accounts" / Segment) { accountId =>
+      get {
+        AuthDirectives.validateAuth.apply { auth =>
+          validateJsonRequest(AccountGetRequestWithAuth(auth, accountId)).apply { inputData =>
+            accountGetPresenter.response(accountGetUseCase.execute(inputData))
+          }
         }
       }
     }

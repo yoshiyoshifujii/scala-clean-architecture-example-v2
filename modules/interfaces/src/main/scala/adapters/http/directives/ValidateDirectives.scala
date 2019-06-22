@@ -1,11 +1,6 @@
 package adapters.http.directives
 
-import adapters.http.json.{
-  AccountDeleteRequestWithAuth,
-  AccountUpdateRequestJsonWithAuth,
-  SignInRequestJson,
-  SignUpRequestJson
-}
+import adapters.http.json._
 import adapters.http.rejections.ValidationRejections
 import adapters.validator.{ ValidationResult, Validator }
 import akka.http.scaladsl.server.Directive1
@@ -13,7 +8,7 @@ import akka.http.scaladsl.server.Directives._
 import domain.account.{ AccountId, AccountName, PlainPassword }
 import domain.common.Email
 import usecases.anonymous.{ SignInInput, SignUpInput }
-import usecases.signed.{ AccountDeleteInput, AccountUpdateInput }
+import usecases.signed.{ AccountDeleteInput, AccountGetInput, AccountUpdateInput }
 
 trait ValidateDirectives {
 
@@ -51,6 +46,13 @@ object ValidateDirectives extends ValidateDirectives {
       }
   }
 
+  implicit object AccountGetRequestWithAuthValidator extends Validator[AccountGetRequestWithAuth, AccountGetInput] {
+    override def validate(value: AccountGetRequestWithAuth): ValidationResult[AccountGetInput] =
+      AccountId.validate(value.accountId).map { accountId =>
+        AccountGetInput(value.auth, accountId)
+      }
+  }
+
   implicit object AccountUpdateRequestJsonWithAuthValidator
       extends Validator[AccountUpdateRequestJsonWithAuth, AccountUpdateInput] {
     override def validate(value: AccountUpdateRequestJsonWithAuth): ValidationResult[AccountUpdateInput] =
@@ -69,7 +71,6 @@ object ValidateDirectives extends ValidateDirectives {
       AccountId.validate(value.accountId).map { accountId =>
         AccountDeleteInput(value.auth, accountId)
       }
-
   }
 
 }
