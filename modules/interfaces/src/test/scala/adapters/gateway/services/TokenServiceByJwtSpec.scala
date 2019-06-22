@@ -43,7 +43,7 @@ class TokenServiceByJwtSpec extends FreeSpec with DiagrammedAssertions {
           } yield aid
         }
 
-        assert(verifiedAccountId === accountId)
+        assert(verifiedAccountId.accountId === accountId)
       }
 
     }

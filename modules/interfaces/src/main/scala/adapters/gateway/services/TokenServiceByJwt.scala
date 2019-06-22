@@ -51,7 +51,7 @@ trait TokenServiceByJwt extends TokenService[Effect] {
         ZIO.succeed
       )
 
-  override def verify(token: String, acceptExpiresAt: Long): Effect[AccountId] =
+  override def verify(token: String, acceptExpiresAt: Long): Effect[Auth] =
     ZIO
       .fromTry {
         Try {
@@ -65,8 +65,8 @@ trait TokenServiceByJwt extends TokenService[Effect] {
             .verify(token)
             .getSubject
         }.flatMap(ULID.parseFromString)
-          .map(AccountId)
-      }.foldM[AppType, UseCaseError, AccountId](
+          .map(a => Auth(AccountId(a)))
+      }.foldM[AppType, UseCaseError, Auth](
         cause => ZIO.fail(UseCaseSystemError(cause)),
         ZIO.succeed
       )
