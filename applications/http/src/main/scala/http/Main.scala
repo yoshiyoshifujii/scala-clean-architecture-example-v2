@@ -1,6 +1,7 @@
 package http
 
 import adapters.dao.jdbc.RDB
+import adapters.gateway.services.JwtConfig
 import adapters.http.controllers.Controller
 import adapters.{ AppType, DISettings }
 import akka.actor.ActorSystem
@@ -11,6 +12,7 @@ import slick.basic.DatabaseConfig
 import slick.jdbc.JdbcProfile
 
 import scala.concurrent.ExecutionContextExecutor
+import scala.concurrent.duration._
 
 object Main extends App {
 
@@ -27,8 +29,14 @@ object Main extends App {
   private val db       = dbConfig.db
 
   private val environment: AppType = new RDB.Live(profile, db)
-  private val design               = DISettings.design(environment)
-  private val session              = design.newSession
+  private val jwtSecret            = config.getString("sample.jwt.hmac512.secret")
+  private val jwtConfig = JwtConfig(
+    issuer = config.getString("sample.jwt.issuer"),
+    audience = config.getString("sample.jwt.audience"),
+    accessTokenValueExpiresIn = config.getDuration("sample.jwt.accessTokenValueExpiresIn").toMillis.millis
+  )
+  private val design  = DISettings.design(environment, jwtSecret, jwtConfig)
+  private val session = design.newSession
   session.start
 
   val controller = session.build[Controller]

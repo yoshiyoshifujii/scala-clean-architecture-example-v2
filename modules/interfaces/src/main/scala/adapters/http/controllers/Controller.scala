@@ -1,14 +1,14 @@
 package adapters.http.controllers
 
 import adapters.http.directives.ValidateDirectives
-import adapters.http.json.SignUpRequestJson
-import adapters.http.presenters.SignUpPresenter
+import adapters.http.json.{ SignInRequestJson, SignUpRequestJson }
+import adapters.http.presenters.{ SignInPresenter, SignUpPresenter }
 import adapters.{ AppType, Effect }
 import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.server.Route
 import de.heikoseeberger.akkahttpcirce.FailFastCirceSupport._
 import io.circe.generic.auto._
-import usecases.anonymous.SignUpUseCase
+import usecases.anonymous.{ SignInUseCase, SignUpUseCase }
 import wvlet.airframe._
 
 trait Controller {
@@ -20,8 +20,11 @@ trait Controller {
   private val signUpUseCase   = bind[SignUpUseCase[Effect]]
   private val signUpPresenter = bind[SignUpPresenter]
 
+  private val signInUseCase   = bind[SignInUseCase[Effect]]
+  private val signInPresenter = bind[SignInPresenter]
+
   def toRoutes: Route =
-    signUp
+    signUp ~ signIn
 
   private[controllers] def signUp: Route =
     path("signup") {
@@ -29,6 +32,17 @@ trait Controller {
         entity(as[SignUpRequestJson]) { json =>
           validateJsonRequest(json).apply { inputData =>
             signUpPresenter.response(signUpUseCase.execute(inputData))
+          }
+        }
+      }
+    }
+
+  private[controllers] def signIn: Route =
+    path("signin") {
+      post {
+        entity(as[SignInRequestJson]) { json =>
+          validateJsonRequest(json).apply { inputData =>
+            signInPresenter.response(signInUseCase.execute(inputData))
           }
         }
       }

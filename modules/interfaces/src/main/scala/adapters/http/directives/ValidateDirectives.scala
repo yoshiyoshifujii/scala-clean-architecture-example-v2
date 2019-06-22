@@ -1,13 +1,13 @@
 package adapters.http.directives
 
-import adapters.http.json.SignUpRequestJson
+import adapters.http.json.{ SignInRequestJson, SignUpRequestJson }
 import adapters.http.rejections.ValidationRejections
 import adapters.validator.{ ValidationResult, Validator }
 import akka.http.scaladsl.server.Directive1
 import akka.http.scaladsl.server.Directives._
 import domain.account.{ AccountName, PlainPassword }
 import domain.common.Email
-import usecases.anonymous.SignUpInput
+import usecases.anonymous.{ SignInInput, SignUpInput }
 
 trait ValidateDirectives {
 
@@ -31,6 +31,17 @@ object ValidateDirectives extends ValidateDirectives {
       ).mapN {
         case (email, password, name) =>
           SignUpInput(email, password, name)
+      }
+  }
+
+  implicit object SignInRequestJsonValidator extends Validator[SignInRequestJson, SignInInput] {
+    override def validate(value: SignInRequestJson): ValidationResult[SignInInput] =
+      (
+        Email.validate(value.email),
+        PlainPassword.validate(value.password)
+      ).mapN {
+        case (email, password) =>
+          SignInInput(email, password)
       }
   }
 

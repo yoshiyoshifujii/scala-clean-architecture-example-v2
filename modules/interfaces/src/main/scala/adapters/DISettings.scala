@@ -1,12 +1,13 @@
 package adapters
 
 import adapters.gateway.repositories.slick.AccountRepositoryBySlick
-import adapters.gateway.services.EncryptServiceByBCrypt
+import adapters.gateway.services.{ EncryptServiceByBCrypt, JwtConfig, TokenServiceByJwt }
 import adapters.http.controllers.Controller
 import adapters.http.presenters.SignUpPresenter
+import com.auth0.jwt.algorithms.Algorithm
 import repositories.AccountRepository
 import scalaz.zio.internal.{ Platform, PlatformLive }
-import services.EncryptService
+import services.{ EncryptService, TokenService }
 import slick.jdbc.JdbcProfile
 import wvlet.airframe._
 
@@ -30,9 +31,15 @@ trait DISettings {
     newDesign
       .bind[AccountRepository[Effect]].to[AccountRepositoryBySlick]
 
+  private[adapters] def designOfJwtConfig(secret: String, jwtConfig: JwtConfig): Design =
+    newDesign
+      .bind[Algorithm].toLazyInstance(Algorithm.HMAC512(secret))
+      .bind[JwtConfig].toLazyInstance(jwtConfig)
+
   private[adapters] def designOfServices: Design =
     newDesign
       .bind[EncryptService[Effect]].to[EncryptServiceByBCrypt]
+      .bind[TokenService[Effect]].to[TokenServiceByJwt]
 
   private[adapters] def designOfHttpPresenters: Design =
     newDesign
@@ -42,10 +49,11 @@ trait DISettings {
     newDesign
       .bind[Controller].toEagerSingleton
 
-  def design(environment: AppType): Design =
+  def design(environment: AppType, jwtSecret: String, jwtConfig: JwtConfig): Design =
     designOfRuntime(environment)
       .add(designOfSlick(environment.rdbService.profile, environment.rdbService.db))
       .add(designOfRepositories)
+      .add(designOfJwtConfig(jwtSecret, jwtConfig))
       .add(designOfServices)
 
 }
