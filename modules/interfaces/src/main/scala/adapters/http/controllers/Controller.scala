@@ -3,6 +3,7 @@ package adapters.http.controllers
 import adapters.http.directives.{ AuthDirectives, ValidateDirectives }
 import adapters.http.json._
 import adapters.http.presenters._
+import adapters.http.rejections.RejectionHandlers
 import adapters.{ AppType, Effect }
 import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.server.Route
@@ -38,8 +39,9 @@ trait Controller {
   private val accountDeleteUseCase   = bind[AccountDeleteUseCase[Effect]]
   private val accountDeletePresenter = bind[AccountDeletePresenter]
 
-  def toRoutes: Route =
+  def toRoutes: Route = handleRejections(RejectionHandlers.default) {
     signUp ~ signIn ~ accountGets ~ accountGet ~ accountUpdate ~ accountDelete
+  }
 
   private def signUp: Route =
     path("signup") {

@@ -2,8 +2,6 @@ package adapters
 
 import adapters.gateway.repositories.slick.AccountRepositoryBySlick
 import adapters.gateway.services.{ EncryptServiceByBCrypt, JwtConfig, TokenServiceByJwt }
-import adapters.http.controllers.Controller
-import adapters.http.presenters.SignUpPresenter
 import com.auth0.jwt.algorithms.Algorithm
 import repositories.AccountRepository
 import scalaz.zio.internal.{ Platform, PlatformLive }
@@ -40,14 +38,6 @@ trait DISettings {
     newDesign
       .bind[EncryptService[Effect]].to[EncryptServiceByBCrypt]
       .bind[TokenService[Effect]].to[TokenServiceByJwt]
-
-  private[adapters] def designOfHttpPresenters: Design =
-    newDesign
-      .bind[SignUpPresenter].toEagerSingleton
-
-  private[adapters] def designOfHttpControllers: Design =
-    newDesign
-      .bind[Controller].toEagerSingleton
 
   def design(environment: AppType, jwtSecret: String, jwtConfig: JwtConfig): Design =
     designOfRuntime(environment)

@@ -1,7 +1,7 @@
 package adapters.http.directives
 
 import adapters.http.json._
-import adapters.http.rejections.ValidationRejections
+import adapters.http.rejections.ValidationRejection
 import adapters.validator.{ ValidationResult, Validator }
 import akka.http.scaladsl.server.Directive1
 import akka.http.scaladsl.server.Directives._
@@ -15,7 +15,7 @@ trait ValidateDirectives {
   def validateJsonRequest[A, B](value: A)(implicit V: Validator[A, B]): Directive1[B] =
     V.validate(value)
       .fold({ errors =>
-        reject(ValidationRejections(errors))
+        reject(ValidationRejection(errors))
       }, provide)
 
 }

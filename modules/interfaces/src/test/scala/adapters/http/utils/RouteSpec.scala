@@ -22,7 +22,6 @@ trait RouteSpec extends ScalatestRouteTest with BeforeAndAfterAll with FailFastC
   def design: Design =
     newDesign
       .add(DISettings.designOfRuntime(environment))
-      .add(DISettings.designOfHttpControllers)
 
   override def beforeAll(): Unit = {
     super.beforeAll()

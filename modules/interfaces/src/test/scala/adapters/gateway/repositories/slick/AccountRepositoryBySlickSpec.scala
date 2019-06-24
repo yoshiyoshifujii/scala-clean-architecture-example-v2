@@ -62,52 +62,5 @@ class AccountRepositoryBySlickSpec
       }
     }
 
-    "already exists" in {
-      val repository = new AccountRepositoryBySlick(dbConfig.profile, dbConfig.db)
-      val id1        = AccountId()
-      val id2        = AccountId()
-
-      assert(id1 !== id2)
-
-      assert {
-        runtime.unsafeRun {
-          repository.store(
-            Account.generate(
-              id1,
-              Email.generate("a@a.com"),
-              AccountName.generate("hoge hogeo"),
-              EncryptedPassword("passPass1")
-            )
-          )
-        } === 1L
-      }
-
-      assertThrows[scalaz.zio.FiberFailure] {
-        runtime.unsafeRun {
-          repository.store(
-            Account.generate(
-              id2,
-              Email.generate("a@a.com"),
-              AccountName.generate("fuga fugao"),
-              EncryptedPassword("passPass1")
-            )
-          )
-        }
-      }
-
-      val res = runtime.unsafeRun {
-        repository.resolveAll
-      }
-      assert {
-        res.length === 1
-      }
-      assert {
-        res.head.id === id1
-      }
-      assert {
-        res.head.name.value.value === "hoge hogeo"
-      }
-
-    }
   }
 }
