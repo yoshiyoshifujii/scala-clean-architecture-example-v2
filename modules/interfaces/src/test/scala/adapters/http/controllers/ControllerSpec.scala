@@ -163,6 +163,20 @@ class ControllerSpec
       }
     }
 
+    "invalid case - fake token" in {
+      Get("/accounts") ~> controller.toRoutes ~> check {
+        assert(response.status === StatusCodes.Unauthorized)
+      }
+      Get("/accounts").addCredentials(OAuth2BearerToken("fake")) ~> controller.toRoutes ~> check {
+        assert(response.status === StatusCodes.Unauthorized)
+      }
+      val expiredToken =
+        "eyJjdHkiOiJKV1QiLCJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJhdWQiOiJzYW1wbGUiLCJzdWIiOiIwMURFM0owWEtUUzdQRDJYM0NUQ1Q5M0E0TSIsImFjY291bnRfaWQiOiIwMURFM0owWEtUUzdQRDJYM0NUQ1Q5M0E0TSIsImlzcyI6InNhbXBsZSIsImV4cCI6MTU2MTM0MDI0MCwiaWF0IjoxNTYxMzQwMTgwLCJqdGkiOiJiNTRjZGYxOC05NjU2LTQ3MjUtOGE0NS1iOWVjYTZlMzdjYTcifQ.nEREj-wxBBs3LkP1kwUrQ9zsYqLGEAGvAbczw_v3zlc7e8FIKI91gVjkAdntIz6tQ4beReF7MvRHXEmJ0-WIug"
+      Get("/accounts").addCredentials(OAuth2BearerToken(expiredToken)) ~> controller.toRoutes ~> check {
+        assert(response.status === StatusCodes.Unauthorized)
+      }
+    }
+
     "invalid case - accountUpdate - not found" in {
       val (_, token) = signUpAndSignIn("hoge@hoge.com")
       val accountUpdateData =

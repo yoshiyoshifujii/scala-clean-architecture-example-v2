@@ -68,9 +68,11 @@ trait Controller {
   private def accountGets: Route =
     path("accounts") {
       get {
-        AuthDirectives.validateAuth.apply { auth =>
-          val inputData = AccountGetsInput(auth)
-          accountGetsPresenter.response(accountGetsUseCase.execute(inputData))
+        extractLog { implicit logging =>
+          AuthDirectives.validateAuth.apply { auth =>
+            val inputData = AccountGetsInput(auth)
+            accountGetsPresenter.response(accountGetsUseCase.execute(inputData))
+          }
         }
       }
     }
@@ -78,9 +80,11 @@ trait Controller {
   private def accountGet: Route =
     path("accounts" / Segment) { accountId =>
       get {
-        AuthDirectives.validateAuth.apply { auth =>
-          validateJsonRequest(AccountGetRequestWithAuth(auth, accountId)).apply { inputData =>
-            accountGetPresenter.response(accountGetUseCase.execute(inputData))
+        extractLog { implicit logging =>
+          AuthDirectives.validateAuth.apply { auth =>
+            validateJsonRequest(AccountGetRequestWithAuth(auth, accountId)).apply { inputData =>
+              accountGetPresenter.response(accountGetUseCase.execute(inputData))
+            }
           }
         }
       }
@@ -89,10 +93,12 @@ trait Controller {
   private def accountUpdate: Route =
     path("accounts" / Segment) { accountId =>
       post {
-        AuthDirectives.validateAuth.apply { auth =>
-          entity(as[AccountUpdateRequestJson]) { json =>
-            validateJsonRequest(AccountUpdateRequestJsonWithAuth(auth, json, accountId)).apply { inputData =>
-              accountUpdatePresenter.response(accountUpdateUseCase.execute(inputData))
+        extractLog { implicit logging =>
+          AuthDirectives.validateAuth.apply { auth =>
+            entity(as[AccountUpdateRequestJson]) { json =>
+              validateJsonRequest(AccountUpdateRequestJsonWithAuth(auth, json, accountId)).apply { inputData =>
+                accountUpdatePresenter.response(accountUpdateUseCase.execute(inputData))
+              }
             }
           }
         }
@@ -102,9 +108,11 @@ trait Controller {
   private def accountDelete: Route =
     path("accounts" / Segment) { accountId =>
       delete {
-        AuthDirectives.validateAuth.apply { auth =>
-          validateJsonRequest(AccountDeleteRequestWithAuth(auth, accountId)).apply { inputData =>
-            accountDeletePresenter.response(accountDeleteUseCase.execute(inputData))
+        extractLog { implicit logging =>
+          AuthDirectives.validateAuth.apply { auth =>
+            validateJsonRequest(AccountDeleteRequestWithAuth(auth, accountId)).apply { inputData =>
+              accountDeletePresenter.response(accountDeleteUseCase.execute(inputData))
+            }
           }
         }
       }

@@ -16,4 +16,5 @@ object RejectionHandlers {
         complete((StatusCodes.BadRequest, ErrorResponseJson(errors.map(_.message).toList)))
     }
     .result()
+    .withFallback(RejectionHandler.default)
 }
