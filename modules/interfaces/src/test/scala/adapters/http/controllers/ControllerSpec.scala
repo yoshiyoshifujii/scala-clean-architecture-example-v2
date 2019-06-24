@@ -11,6 +11,7 @@ import adapters.{ AppType, DISettings }
 import akka.http.scaladsl.model.headers.OAuth2BearerToken
 import akka.http.scaladsl.model.{ ContentTypes, HttpEntity, StatusCodes }
 import com.auth0.jwt.algorithms.Algorithm
+import infrastructure.ulid.ULID
 import io.circe.generic.auto._
 import org.scalatest.{ DiagrammedAssertions, FreeSpec }
 import wvlet.airframe.Design
@@ -44,9 +45,9 @@ class ControllerSpec
   "Controller" - {
     lazy val controller = session.build[Controller]
 
-    "success" in {
+    def signUpAndSignIn(email: String): (String, String) = {
       val signUpData: Array[Byte] =
-        """{"email":"a@a.com","name":"hoge hogeo","password":"hogeHOGE1"}""".getBytes(StandardCharsets.UTF_8)
+        raw"""{"email":"$email","name":"hoge hogeo","password":"hogeHOGE1"}""".getBytes(StandardCharsets.UTF_8)
       val accountId = Post("/signup", HttpEntity(ContentTypes.`application/json`, signUpData)) ~> controller.toRoutes ~> check {
           assert(response.status === StatusCodes.OK)
           val responseJson = responseAs[SignUpResponseJson]
@@ -55,52 +56,60 @@ class ControllerSpec
         }
 
       val signInData: Array[Byte] =
-        """{"email":"a@a.com","password":"hogeHOGE1"}""".getBytes(StandardCharsets.UTF_8)
-      Post("/signin", HttpEntity(ContentTypes.`application/json`, signInData)) ~> controller.toRoutes ~> check {
+        raw"""{"email":"$email","password":"hogeHOGE1"}""".getBytes(StandardCharsets.UTF_8)
+      val token = Post("/signin", HttpEntity(ContentTypes.`application/json`, signInData)) ~> controller.toRoutes ~> check {
+          assert(response.status === StatusCodes.OK)
+          val responseJson = responseAs[SignInResponseJson]
+
+          val maybeToken = responseJson.token
+          assert(maybeToken.isDefined === true)
+
+          maybeToken.get
+        }
+
+      accountId -> token
+    }
+
+    "success" in {
+      val (accountId, token) = signUpAndSignIn("a@a.com")
+
+      Get("/accounts")
+        .addCredentials(OAuth2BearerToken(token)) ~> controller.toRoutes ~> check {
         assert(response.status === StatusCodes.OK)
-        val responseJson = responseAs[SignInResponseJson]
 
-        val maybeToken = responseJson.token
-        assert(maybeToken.isDefined === true)
-
-        Get("/accounts")
-          .addCredentials(OAuth2BearerToken(maybeToken.get)) ~> controller.toRoutes ~> check {
-          assert(response.status === StatusCodes.OK)
-
-          val responseJson = responseAs[AccountGetsResponseJson]
-          assert(responseJson.accounts.nonEmpty)
-          assert(responseJson.accounts.head.id === accountId)
-          assert(responseJson.accounts.head.name === "hoge hogeo")
-        }
-
-        val accountUpdateData =
-          """{"name":"fuga fugao"}""".getBytes(StandardCharsets.UTF_8)
-        Post(s"/accounts/$accountId", HttpEntity(ContentTypes.`application/json`, accountUpdateData))
-          .addCredentials(OAuth2BearerToken(maybeToken.get)) ~> controller.toRoutes ~> check {
-          assert(response.status === StatusCodes.OK)
-        }
-
-        Get(s"/accounts/$accountId")
-          .addCredentials(OAuth2BearerToken(maybeToken.get)) ~> controller.toRoutes ~> check {
-          assert(response.status === StatusCodes.OK)
-
-          val responseJson = responseAs[AccountGetResponseJson]
-          assert(responseJson.account.nonEmpty)
-          assert(responseJson.account.get.id === accountId)
-          assert(responseJson.account.get.name === "fuga fugao")
-        }
-
-        Delete(s"/accounts/$accountId")
-          .addCredentials(OAuth2BearerToken(maybeToken.get)) ~> controller.toRoutes ~> check {
-          assert(response.status === StatusCodes.OK)
-        }
-
-        Get(s"/accounts/$accountId")
-          .addCredentials(OAuth2BearerToken(maybeToken.get)) ~> controller.toRoutes ~> check {
-          assert(response.status === StatusCodes.NotFound)
-        }
-
+        val responseJson = responseAs[AccountGetsResponseJson]
+        assert(responseJson.accounts.nonEmpty)
+        assert(responseJson.accounts.head.id === accountId)
+        assert(responseJson.accounts.head.name === "hoge hogeo")
       }
+
+      val accountUpdateData =
+        """{"name":"fuga fugao"}""".getBytes(StandardCharsets.UTF_8)
+      Post(s"/accounts/$accountId", HttpEntity(ContentTypes.`application/json`, accountUpdateData))
+        .addCredentials(OAuth2BearerToken(token)) ~> controller.toRoutes ~> check {
+        assert(response.status === StatusCodes.OK)
+      }
+
+      Get(s"/accounts/$accountId")
+        .addCredentials(OAuth2BearerToken(token)) ~> controller.toRoutes ~> check {
+        assert(response.status === StatusCodes.OK)
+
+        val responseJson = responseAs[AccountGetResponseJson]
+        assert(responseJson.account.nonEmpty)
+        assert(responseJson.account.get.id === accountId)
+        assert(responseJson.account.get.name === "fuga fugao")
+      }
+
+      Delete(s"/accounts/$accountId")
+        .addCredentials(OAuth2BearerToken(token)) ~> controller.toRoutes ~> check {
+        assert(response.status === StatusCodes.OK)
+      }
+
+      Get(s"/accounts/$accountId")
+        .addCredentials(OAuth2BearerToken(token)) ~> controller.toRoutes ~> check {
+        assert(response.status === StatusCodes.NotFound)
+      }
+
     }
 
     "invalid case - sign up - already exists" in {
@@ -153,6 +162,17 @@ class ControllerSpec
         assert(response.status === StatusCodes.BadRequest)
       }
     }
+
+    "invalid case - accountUpdate - not found" in {
+      val (_, token) = signUpAndSignIn("hoge@hoge.com")
+      val accountUpdateData =
+        """{"name":"fuga fugao"}""".getBytes(StandardCharsets.UTF_8)
+      Post(s"/accounts/${ULID().asString}", HttpEntity(ContentTypes.`application/json`, accountUpdateData))
+        .addCredentials(OAuth2BearerToken(token)) ~> controller.toRoutes ~> check {
+        assert(response.status === StatusCodes.NotFound)
+      }
+    }
+
   }
 
 }
