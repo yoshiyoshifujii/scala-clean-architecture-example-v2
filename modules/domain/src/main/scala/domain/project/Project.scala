@@ -49,7 +49,7 @@ object Project {
     GeneratedProject(id, customer, building, creator, DateTime.now, creator, DateTime.now)
 
   val generateResolved
-    : (ProjectId, Customer, Building, Account, DateTime, Account, DateTime, BigInt) => ResolvedProject =
+      : (ProjectId, Customer, Building, Account, DateTime, Account, DateTime, BigInt) => ResolvedProject =
     ResolvedProject.apply
 
 }

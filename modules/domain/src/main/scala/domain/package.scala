@@ -25,6 +25,5 @@ package object domain {
 
   trait ValueObject[A, B] extends Validator[A, B] with Generator[A, B]
 
-  trait VersionUpper {
-  }
+  trait VersionUpper {}
 }

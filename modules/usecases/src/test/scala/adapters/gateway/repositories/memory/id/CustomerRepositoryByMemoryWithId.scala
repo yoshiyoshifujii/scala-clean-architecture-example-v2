@@ -1,6 +1,6 @@
 package adapters.gateway.repositories.memory.id
 
-import adapters.dao.memory.AccountComponent
+import adapters.dao.memory.CustomerComponent
 import adapters.gateway.repositories.memory.id.common.{
   AggregateAllReadFeature,
   AggregateSingleHardDeleteFeature,
@@ -8,16 +8,16 @@ import adapters.gateway.repositories.memory.id.common.{
   AggregateSingleWriteFeature
 }
 import cats.Id
-import cats.implicits._
 import com.google.common.base.Ticker
 import domain.account._
-import domain.common.Email
+import domain.common.{ DateTime, Email }
+import domain.customer._
 import infrastructure.ulid.ULID
-import repositories.AccountRepository
+import repositories.CustomerRepository
 
 import scala.concurrent.duration.Duration
 
-class AccountRepositoryByMemoryWithId(
+class CustomerRepositoryByMemoryWithId(
     concurrencyLevel: Option[Int] = None,
     expireAfterAccess: Option[Duration] = None,
     expireAfterWrite: Option[Duration] = None,
@@ -30,18 +30,18 @@ class AccountRepositoryByMemoryWithId(
     ticker: Option[Ticker] = None,
     weakKeys: Option[Boolean] = None,
     weakValues: Option[Boolean] = None
-) extends AccountRepository[Id]
+) extends CustomerRepository[Id]
     with AggregateSingleReadFeature
     with AggregateSingleWriteFeature
     with AggregateAllReadFeature
     with AggregateSingleHardDeleteFeature
-    with AccountComponent {
+    with CustomerComponent {
 
-  override type RecordType = AccountRecord
-  override type DaoType    = AccountDao[Id]
+  override type RecordType = CustomerRecord
+  override type DaoType    = CustomerDao[Id]
 
-  override protected val dao: AccountDao[Id] =
-    new AccountDao(
+  override protected val dao: CustomerDao[Id] =
+    new CustomerDao(
       concurrencyLevel = concurrencyLevel,
       expireAfterAccess = expireAfterAccess,
       expireAfterWrite = expireAfterWrite,
@@ -58,27 +58,32 @@ class AccountRepositoryByMemoryWithId(
 
   override protected def convertToRecord: AggregateType => Id[RecordType] =
     aggregate =>
-      AccountRecord(
+      CustomerRecord(
         aggregate.id.value,
+        aggregate.code.value.value,
+        aggregate.name.value.value,
         aggregate.email.value.value,
-        aggregate.password.value,
-        aggregate.name.value.value
+        aggregate.creator.value,
+        aggregate.created.value,
+        aggregate.updater.value,
+        aggregate.updated.value,
+        aggregate.version
       )
 
   override protected def convertToAggregate: RecordType => Id[AggregateType] =
     record =>
-      Account.generateResolved(
-        AccountId(ULID.parseFromString(record.id).get),
+      Customer.generateResolved(
+        CustomerId(ULID.parseFromString(record.id).get),
+        CustomerCode.generate(record.code),
+        CustomerName.generate(record.name),
         Email.generate(record.email),
-        AccountName.generate(record.name),
-        EncryptedPassword(record.password)
+        AccountId(ULID.parseFromString(record.creator).get),
+        DateTime(record.created),
+        AccountId(ULID.parseFromString(record.updater).get),
+        DateTime(record.updated),
+        record.version
       )
 
-  override def findBy(email: Email): Id[Option[ResolvedAccount]] = {
-    dao.getAll.find(_.email == email.value.value) match {
-      case Some(record) => convertToAggregate(record).map(a => Some(a.asInstanceOf[ResolvedAccount]))
-      case None         => None
-    }
-  }
-
+  override def findBy(code: CustomerCode): Id[Option[ResolvedCustomer]] =
+    dao.getAll.find(_.code == code.value.value).map(record => convertToAggregate(record).asInstanceOf[ResolvedCustomer])
 }

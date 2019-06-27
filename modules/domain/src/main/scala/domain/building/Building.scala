@@ -48,7 +48,7 @@ object Building {
     GeneratedBuilding(id, name, address, creator, DateTime.now, creator, DateTime.now)
 
   val generateResolved
-    : (BuildingId, BuildingName, Address, Account, DateTime, Account, DateTime, BigInt) => ResolvedBuilding =
+      : (BuildingId, BuildingName, Address, Account, DateTime, Account, DateTime, BigInt) => ResolvedBuilding =
     ResolvedBuilding.apply
 
   val rename: (ResolvedBuilding, BuildingName) => ResolvedBuilding = (building, name) => building.copy(name = name)

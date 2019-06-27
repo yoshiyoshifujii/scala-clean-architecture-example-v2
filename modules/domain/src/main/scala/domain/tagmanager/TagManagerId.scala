@@ -2,7 +2,7 @@ package domain.tagmanager
 
 import cats.implicits._
 import com.github.j5ik2o.dddbase.AggregateStringId
-import domain.{DomainError, DomainValidationResult, ValueObject}
+import domain.{ DomainError, DomainValidationResult, ValueObject }
 import infrastructure.ulid.ULID
 
 case class TagManagerId(breachEncapsulationOfValue: ULID = ULID()) extends AggregateStringId {

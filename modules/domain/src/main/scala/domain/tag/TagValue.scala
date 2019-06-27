@@ -8,7 +8,7 @@ import eu.timepit.refined.api.Refined
 import eu.timepit.refined.collection.Size
 import eu.timepit.refined.numeric.Interval
 
-final case class TagValue private[customer] (value: TagValue.AsString)
+final case class TagValue private[tag] (value: TagValue.AsString)
 
 object TagValue extends ValueObject[String, TagValue] {
   type AsString = String Refined Size[Interval.Closed[W.`0`.T, W.`50`.T]]
