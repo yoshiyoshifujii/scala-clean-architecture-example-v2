@@ -12,7 +12,7 @@ trait Presenter[OutputData] {
   def response(res: Effect[OutputData])(implicit runtime: zio.Runtime[AppType]): Route = {
     val future = runtime.unsafeRunToFuture {
       res.foldM(
-        convert,
+        handleError,
         success => ZIO.succeed(convert(success))
       )
     }
@@ -21,7 +21,13 @@ trait Presenter[OutputData] {
 
   protected def convert(outputData: OutputData): Route
 
-  protected def convert(useCaseApplicationError: UseCaseApplicationError): Task[Route] =
+  protected def handleError(useCaseError: UseCaseError): Task[Route] =
+    useCaseError match {
+      case appError: UseCaseApplicationError => handleError(appError)
+      case UseCaseSystemError(cause)         => handleError(cause)
+    }
+
+  protected def handleError(useCaseApplicationError: UseCaseApplicationError): Task[Route] =
     Task.succeed {
       complete(
         HttpResponse(
@@ -31,12 +37,6 @@ trait Presenter[OutputData] {
       )
     }
 
-  protected def convert(cause: Throwable): Task[Route] = Task.fail(cause)
-
-  protected def convert(useCaseError: UseCaseError): Task[Route] =
-    useCaseError match {
-      case appError: UseCaseApplicationError => convert(appError)
-      case UseCaseSystemError(cause)         => convert(cause)
-    }
+  protected def handleError(cause: Throwable): Task[Route] = Task.fail(cause)
 
 }

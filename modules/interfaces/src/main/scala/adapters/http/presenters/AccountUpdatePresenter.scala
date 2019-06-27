@@ -15,7 +15,7 @@ trait AccountUpdatePresenter extends Presenter[AccountUpdateOutput] {
   override protected def convert(outputData: AccountUpdateOutput): Route =
     complete(AccountUpdateResponseJson(Some(outputData.id.value)))
 
-  override protected def convert(cause: Throwable): Task[Route] =
+  override protected def handleError(cause: Throwable): Task[Route] =
     cause match {
       case _: AggregateNotFoundException =>
         Task.succeed(

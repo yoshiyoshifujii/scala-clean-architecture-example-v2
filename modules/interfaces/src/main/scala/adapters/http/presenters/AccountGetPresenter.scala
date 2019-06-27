@@ -19,7 +19,7 @@ trait AccountGetPresenter extends Presenter[AccountGetOutput] {
       )
     )
 
-  override protected def convert(cause: Throwable): Task[Route] =
+  override protected def handleError(cause: Throwable): Task[Route] =
     cause match {
       case _: AggregateNotFoundException =>
         Task.succeed(
