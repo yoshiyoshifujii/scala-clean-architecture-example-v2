@@ -2,7 +2,7 @@ package adapters.gateway.repositories.slick.common
 
 import adapters.Effect
 import com.github.j5ik2o.dddbase.AggregateAllReader
-import scalaz.zio.ZIO
+import zio.ZIO
 import usecases.UseCaseSystemError
 
 trait AggregateAllReadFeature extends AggregateAllReader[Effect] with AggregateBaseReadFeature {

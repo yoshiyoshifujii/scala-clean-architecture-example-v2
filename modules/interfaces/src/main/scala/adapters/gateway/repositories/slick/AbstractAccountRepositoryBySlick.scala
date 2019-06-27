@@ -12,7 +12,7 @@ import domain.account.{ Account, AccountId, AccountName, EncryptedPassword }
 import domain.common.Email
 import infrastructure.ulid.ULID
 import repositories.AccountRepository
-import scalaz.zio.ZIO
+import zio.ZIO
 import slick.jdbc.JdbcProfile
 import slick.lifted.Rep
 

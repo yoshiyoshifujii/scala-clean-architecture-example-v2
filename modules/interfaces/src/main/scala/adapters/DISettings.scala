@@ -4,7 +4,7 @@ import adapters.gateway.repositories.slick.AccountRepositoryBySlick
 import adapters.gateway.services.{ EncryptServiceByBCrypt, JwtConfig, TokenServiceByJwt }
 import com.auth0.jwt.algorithms.Algorithm
 import repositories.AccountRepository
-import scalaz.zio.internal.{ Platform, PlatformLive }
+import zio.internal.{ Platform, PlatformLive }
 import services.{ EncryptService, TokenService }
 import slick.jdbc.JdbcProfile
 import wvlet.airframe._
@@ -13,8 +13,8 @@ trait DISettings {
 
   private[adapters] def designOfRuntime(environment: AppType): Design =
     newDesign
-      .bind[scalaz.zio.Runtime[AppType]].toLazyInstance {
-        new scalaz.zio.Runtime[AppType] {
+      .bind[zio.Runtime[AppType]].toLazyInstance {
+        new zio.Runtime[AppType] {
           override val Environment: AppType = environment
           val Platform: Platform            = PlatformLive.Default
         }

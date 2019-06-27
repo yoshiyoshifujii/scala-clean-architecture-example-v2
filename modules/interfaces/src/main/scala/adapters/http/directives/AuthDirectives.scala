@@ -7,7 +7,7 @@ import akka.http.scaladsl.server.Directive1
 import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.server.directives.AuthenticationResult
 import domain.account.Auth
-import scalaz.zio.ZIO
+import zio.ZIO
 import services.TokenService
 import usecases.{ UseCaseApplicationError, UseCaseSystemError }
 
@@ -17,7 +17,7 @@ trait AuthDirectives {
 
   def validateAuth(
       implicit tokenService: TokenService[Effect],
-      runtime: scalaz.zio.Runtime[AppType],
+      runtime: zio.Runtime[AppType],
       logging: LoggingAdapter
   ): Directive1[Auth] =
     authenticateOrRejectWithChallenge[OAuth2BearerToken, Auth] {

@@ -25,9 +25,9 @@ object Commons {
   val codec   = "commons-codec" % "commons-codec" % version
 }
 
-object Scalaz {
-  val version = "1.0-RC4"
-  val zio     = "org.scalaz" %% "scalaz-zio" % version
+object Zio {
+  val version = "1.0.0-RC8-12"
+  val zio     = "dev.zio" %% "zio" % version
 }
 
 object ScalaDDDBase {

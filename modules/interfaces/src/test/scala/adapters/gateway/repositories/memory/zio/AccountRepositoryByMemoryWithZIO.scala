@@ -13,7 +13,7 @@ import domain.account._
 import domain.common.Email
 import infrastructure.ulid.ULID
 import repositories.AccountRepository
-import scalaz.zio.ZIO
+import zio.ZIO
 
 import scala.concurrent.duration.Duration
 

@@ -6,7 +6,7 @@ import adapters.util.{ FlywayWithMySQLSpecSupport, Slick3SpecSupport }
 import domain.account.{ Account, AccountId, AccountName, EncryptedPassword }
 import domain.common.Email
 import org.scalatest.{ DiagrammedAssertions, FreeSpec }
-import scalaz.zio.internal.{ Platform, PlatformLive }
+import zio.internal.{ Platform, PlatformLive }
 
 class AccountRepositoryBySlickSpec
     extends FreeSpec
@@ -16,7 +16,7 @@ class AccountRepositoryBySlickSpec
   override val tables: Seq[String] = Seq("account")
 
   "AccountRepositoryBySlick" - {
-    def runtime = new scalaz.zio.Runtime[AppType] {
+    def runtime = new zio.Runtime[AppType] {
       override val Environment: AppType = new RDB.Live(dbConfig.profile, dbConfig.db)
       val Platform: Platform            = PlatformLive.Default
     }

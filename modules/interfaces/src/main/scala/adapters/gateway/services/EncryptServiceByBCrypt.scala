@@ -2,7 +2,7 @@ package adapters.gateway.services
 
 import adapters.{ AppType, Effect }
 import com.github.t3hnar.bcrypt._
-import scalaz.zio.ZIO
+import zio.ZIO
 import services.EncryptService
 import usecases.UseCaseSystemError
 

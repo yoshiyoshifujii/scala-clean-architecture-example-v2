@@ -8,7 +8,7 @@ import com.auth0.jwt.JWT
 import com.auth0.jwt.algorithms.Algorithm
 import domain.account.{ AccountId, Auth }
 import infrastructure.ulid.ULID
-import scalaz.zio.ZIO
+import zio.ZIO
 import services.TokenService
 import usecases.{ UseCaseError, UseCaseSystemError }
 import wvlet.airframe._

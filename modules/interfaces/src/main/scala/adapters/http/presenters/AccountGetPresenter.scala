@@ -7,7 +7,7 @@ import akka.http.scaladsl.server.Route
 import com.github.j5ik2o.dddbase.AggregateNotFoundException
 import de.heikoseeberger.akkahttpcirce.FailFastCirceSupport._
 import io.circe.generic.auto._
-import scalaz.zio.Task
+import zio.Task
 import usecases.signed.AccountGetOutput
 
 trait AccountGetPresenter extends Presenter[AccountGetOutput] {

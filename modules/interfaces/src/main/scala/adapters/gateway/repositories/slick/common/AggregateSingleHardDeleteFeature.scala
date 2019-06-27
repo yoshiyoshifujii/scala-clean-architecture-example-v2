@@ -2,7 +2,7 @@ package adapters.gateway.repositories.slick.common
 
 import adapters.{ AppType, Effect }
 import com.github.j5ik2o.dddbase.{ AggregateSingleHardDeletable, AggregateSingleWriter }
-import scalaz.zio.ZIO
+import zio.ZIO
 import usecases.{ UseCaseError, UseCaseSystemError }
 
 trait AggregateSingleHardDeleteFeature extends AggregateSingleHardDeletable[Effect] with AggregateBaseWriteFeature {

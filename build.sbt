@@ -34,7 +34,7 @@ lazy val `usecases` = (project in file("modules/usecases"))
   .settings(
     name := s"$baseName-usecases",
     libraryDependencies ++= Seq(
-        Scalaz.zio          % Test,
+        Zio.zio             % Test,
         Wvlet.airframe      % Test,
         ScalaDDDBase.memory % Test,
         Google.guava        % Test,
@@ -111,7 +111,7 @@ lazy val `interfaces` = (project in file("modules/interfaces"))
     name := s"$baseName-interfaces",
     libraryDependencies ++= Seq(
         Slf4j.api,
-        Scalaz.zio,
+        Zio.zio,
         Wvlet.airframe,
         AkkaHttp.http,
         AkkaHttp.testkit % Test,

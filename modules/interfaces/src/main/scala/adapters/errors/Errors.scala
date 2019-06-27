@@ -2,7 +2,7 @@ package adapters.errors
 
 import adapters.Effect
 import cats._
-import scalaz.zio.ZIO
+import zio.ZIO
 import usecases.UseCaseError
 
 object Errors {

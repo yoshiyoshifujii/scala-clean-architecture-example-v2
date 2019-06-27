@@ -4,12 +4,12 @@ import adapters.{ AppType, Effect }
 import akka.http.scaladsl.model.{ ContentTypes, HttpEntity, HttpResponse, StatusCodes }
 import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.server.Route
-import scalaz.zio.{ Task, ZIO }
+import zio.{ Task, ZIO }
 import usecases.{ UseCaseApplicationError, UseCaseError, UseCaseSystemError }
 
 trait Presenter[OutputData] {
 
-  def response(res: Effect[OutputData])(implicit runtime: scalaz.zio.Runtime[AppType]): Route = {
+  def response(res: Effect[OutputData])(implicit runtime: zio.Runtime[AppType]): Route = {
     val future = runtime.unsafeRunToFuture {
       res.foldM(
         convert,

@@ -2,7 +2,7 @@ package adapters.gateway.repositories.slick
 
 import adapters.Effect
 import domain.common.Email
-import scalaz.zio.ZIO
+import zio.ZIO
 import slick.jdbc.JdbcProfile
 import usecases.UseCaseSystemError
 

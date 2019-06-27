@@ -2,7 +2,7 @@ package adapters.gateway.repositories.slick.common
 
 import adapters.Effect
 import com.github.j5ik2o.dddbase.AggregateSingleWriter
-import scalaz.zio.ZIO
+import zio.ZIO
 import usecases.UseCaseSystemError
 
 trait AggregateSingleWriteFeature extends AggregateSingleWriter[Effect] with AggregateBaseWriteFeature {

@@ -1,7 +1,7 @@
 package usecases
 
 import org.scalatest.FreeSpec
-import scalaz.zio.internal.{ Platform, PlatformLive }
+import zio.internal.{ Platform, PlatformLive }
 
 class UseCaseSpec extends FreeSpec {
 
@@ -23,7 +23,7 @@ class UseCaseSpec extends FreeSpec {
         .bind[SampleController[ZIOContext, SampleResponseJson]].toEagerSingleton
 
       design.withSession { session =>
-        val runtime = new scalaz.zio.Runtime[AppType] {
+        val runtime = new zio.Runtime[AppType] {
           override val Environment: AppType = new RDB.Live[SampleAOnRDBRecord] with KVS.Live[SampleBOnKVSRecord]
           val Platform: Platform            = PlatformLive.Default
         }
@@ -54,7 +54,7 @@ class UseCaseSpec extends FreeSpec {
 
       val controller = new SampleController(sampleUseCase, samplePresenter)
 
-      val runtime = new scalaz.zio.Runtime[AppType] {
+      val runtime = new zio.Runtime[AppType] {
         override val Environment: AppType = new RDB.Live[SampleAOnRDBRecord] with KVS.Live[SampleBOnKVSRecord]
         val Platform: Platform            = PlatformLive.Default
       }

@@ -18,8 +18,8 @@ trait Controller {
   import ValidateDirectives._
   import adapters.errors.Errors._
 
-  private implicit val runtime: scalaz.zio.Runtime[AppType] = bind[scalaz.zio.Runtime[AppType]]
-  private implicit val tokenService: TokenService[Effect]   = bind[TokenService[Effect]]
+  private implicit val runtime: zio.Runtime[AppType]      = bind[zio.Runtime[AppType]]
+  private implicit val tokenService: TokenService[Effect] = bind[TokenService[Effect]]
 
   private val signUpUseCase   = bind[SignUpUseCase[Effect]]
   private val signUpPresenter = bind[SignUpPresenter]

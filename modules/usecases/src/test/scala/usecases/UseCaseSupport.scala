@@ -2,7 +2,7 @@ package usecases
 
 import com.github.j5ik2o.dddbase.{ Aggregate, AggregateSingleWriter, AggregateStringId }
 import domain.{ DomainError, DomainValidationResult }
-import scalaz.zio.ZIO
+import zio.ZIO
 
 import scala.reflect.{ classTag, ClassTag }
 

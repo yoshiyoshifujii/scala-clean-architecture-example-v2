@@ -1,5 +1,5 @@
 import adapters.dao.jdbc.RDB
-import scalaz.zio.ZIO
+import zio.ZIO
 import usecases.UseCaseError
 
 package object adapters {
